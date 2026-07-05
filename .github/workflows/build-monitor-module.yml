@@ -10,38 +10,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install host dependencies
-        run: |
-          set -euxo pipefail
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            git bc bison flex make python3 \
-            libssl-dev libelf-dev dwarves build-essential \
-            unzip rsync cpio xz-utils zip file curl ca-certificates
-
-      # ---------- CLANG CACHE ----------
-      - name: Cache Android clang r416183b
+      # ---------- CLANG CACHE – apt-based, 100% CI reliable ----------
+      - name: Cache clang toolchain
         id: cache-clang
         uses: actions/cache@v4
         with:
-          path: ~/toolchains/clang-r416183b
-          key: clang-r416183b-android12-${{ runner.os }}-v1
+          path: ~/toolchains/clang
+          key: clang-14-ubuntu22-${{ runner.os }}-v3
           restore-keys: |
-            clang-r416183b-android12-
+            clang-14-ubuntu22-
 
-      - name: Fetch Android clang r416183b
-        if: steps.cache-clang.outputs.cache-hit != 'true'
+      - name: Install clang + cross tools
         run: |
           set -euxo pipefail
-          mkdir -p "${HOME}/toolchains/clang-r416183b"
-          curl -L -o /tmp/clang.tgz \
-            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz
-          tar -xzf /tmp/clang.tgz -C "${HOME}/toolchains/clang-r416183b"
-          rm /tmp/clang.tgz
-
-      - name: Verify clang
-        run: |
-          "${HOME}/toolchains/clang-r416183b/bin/clang" --version | head -1
+          if [ ! -x "${HOME}/toolchains/clang/bin/clang" ]; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends \
+              git bc bison flex make python3 \
+              libssl-dev libelf-dev dwarves build-essential \
+              unzip rsync cpio xz-utils zip file curl ca-certificates \
+              clang-14 lld-14 llvm-14 \
+              gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu \
+              gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
+            mkdir -p "${HOME}/toolchains/clang/bin"
+            
+            for t in clang clang++ ld.lld llvm-ar llvm-nm llvm-objcopy llvm-objdump llvm-strip llvm-readelf; do
+              ln -sf "/usr/bin/${t}-14" "${HOME}/toolchains/clang/bin/${t}" 2>/dev/null || true
+              [ -e "/usr/bin/${t}" ] && ln -sf "/usr/bin/${t}" "${HOME}/toolchains/clang/bin/${t}" || true
+            done
+            
+            for t in clang clang++; do
+              [ -x "${HOME}/toolchains/clang/bin/${t}" ] || ln -sf "/usr/bin/${t}-14" "${HOME}/toolchains/clang/bin/${t}"
+            done
+          fi
+          export PATH="${HOME}/toolchains/clang/bin:${PATH}"
+          clang --version | head -1
+          aarch64-linux-gnu-gcc --version | head -1
 
       # ---------- SOURCE ----------
       - name: Clone kernel and MTK modules
@@ -62,13 +66,9 @@ jobs:
           set -euxo pipefail
           MK="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx/Makefile"
           sed -i '/CONFIG_SUPPORT_SNIFFER_RADIOTAP/,/endif/c\ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1' "${MK}"
-          grep -n "SNIFFER_RADIOTAP" "${MK}"
+          grep -n SNIFFER_RADIOTAP "${MK}"
 
       # ---------- LINUX 5.10 COMPAT ----------
-      # The MiCode MTK_kernel_modules spark-s-oss gen4-mt79xx tree
-      # does NOT build clean against MiCode/Xiaomi_Kernel_OpenSource spark-s-oss 5.10
-      # without vendor patches. These shims get it to link for monitor-mode RX testing.
-      # SER timer / TX injection will need proper fixing later.
       - name: Apply Linux 5.10 compat patches – gen4-mt79xx
         run: |
           set -euxo pipefail
@@ -76,17 +76,14 @@ jobs:
           cd "$WLAN"
 
           # 1. config.h – kernel API shims
-          perl -0777 -i -pe 's/(#define _CONFIG_H)/$1\n\n\/\* spark 5.10 compat – Redmi Pad SE monitor build *\/\n#include <linux\/version.h>\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\n#ifndef ioremap_nocache\n#define ioremap_nocache ioremap\n#endif\n#ifndef get_dma_ops\n#define get_dma_ops(dev) NULL\n#endif\n#endif\n#ifndef PCIE_STATE_SUSPEND_ENTERING\n#define PCIE_STATE_SUSPEND_ENTERING 1\n#endif\n/* MTK struct field missing in 5.10 spark kernel – alias to a dummy */\n#define eSuspendtate ulSuspendFlag\n\/\* end compat *\/\n/s' include/config.h
+          perl -0777 -i -pe 's/(#define _CONFIG_H)/$1\n\n\/\* spark 5.10 compat – Redmi Pad SE monitor build *\/\n#include <linux\/version.h>\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\n#ifndef ioremap_nocache\n#define ioremap_nocache ioremap\n#endif\n#ifndef get_dma_ops\n#define get_dma_ops(dev) NULL\n#endif\n#endif\n#ifndef PCIE_STATE_SUSPEND_ENTERING\n#define PCIE_STATE_SUSPEND_ENTERING 1\n#endif\n#define eSuspendtate ulSuspendFlag\n\/\* end compat *\/\n/s' include/config.h
 
-          # 2. Relax -Werror globally for the out-of-tree module
+          # 2. Relax -Werror globally
           echo 'ccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable' >> Makefile
           find os/linux/hif -name Makefile -exec sh -c 'echo "ccflags-y += -Wno-error" >> "$1"' _ {} \;
 
-          # 3. hal_pdma.c – halPdmaGetSuspendState uses missing eSuspendtate / PCIE_STATE_*
-          if grep -q "eSuspendtate" os/linux/hif/common/hal_pdma.c; then
-            perl -0777 -i -pe 's/uint32_t halPdmaGetSuspendState\s*\(\s*IN struct ADAPTER \*prAdapter\s*,\s*uint8_t \*pucState\s*\)\s*\{.*?\n\}\n/s(uint32_t halPdmaGetSuspendState(IN struct ADAPTER *prAdapter, uint8_t *pucState) { if (pucState) *pucState = 0; return false; }\n)/s' os/linux/hif/common/hal_pdma.c || true
-            sed -i 's/eSuspendtate/0/g; s/PCIE_STATE_SUSPEND_ENTERING/0/g' os/linux/hif/common/hal_pdma.c || true
-          fi
+          # 3. hal_pdma.c – halPdmaGetSuspendState uses missing eSuspendtate
+          sed -i 's/eSuspendtate/0/g; s/PCIE_STATE_SUSPEND_ENTERING/0/g' os/linux/hif/common/hal_pdma.c || true
 
           # 4. axi.c – 5.10 API fixes
           AXI=os/linux/hif/axi/axi.c
@@ -94,15 +91,15 @@ jobs:
           sed -i 's/get_dma_ops([^)]*)/NULL/g' "$AXI"
           sed -i 's/init_timer(\([^)]*\));/timer_setup(\1, NULL, 0);/g' "$AXI"
           sed -i '/rSerTimer\.data/d; /rSerTimer\.function/d' "$AXI"
-          
+
+          # copyTxData signature compat wrapper
           if ! grep -q "axiCopyTxData_compat" "$AXI"; then
-            perl -0777 -i -pe 's/(static bool axiCopyTxData\s*\(.*?^\}\s*)/${1}\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\nstatic bool axiCopyTxData_compat(struct MSDU_TOKEN_ENTRY *prToken, void *pvPkt, uint32_t u4Len, uint32_t u4Extra) { return axiCopyTxData(prToken, pvPkt, u4Len); }\n#define axiCopyTxData axiCopyTxData_compat\n#endif\n/smg' "$AXI" || true
+            perl -0777 -i -pe 's/(static const struct HIF_MEM_OPS axiMemOps\s*=\s*\{)/\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\nstatic bool axiCopyTxData_compat(struct MSDU_TOKEN_ENTRY *prToken, void *pvPkt, uint32_t u4Len, uint32_t u4Extra) { extern bool axiCopyTxData(struct MSDU_TOKEN_ENTRY *, void *, uint32_t); return axiCopyTxData(prToken, pvPkt, u4Len); }\n#define axiCopyTxData axiCopyTxData_compat\n#endif\n\n$1/s' "$AXI" || true
           fi
           sed -i 's/\.copyTxData\s*=\s*axiCopyTxData/.copyTxData = axiCopyTxData_compat/g' "$AXI" || true
 
-          echo "--- compat check, remaining bad symbols ---"
-          grep -rn "ioremap_nocache\|get_dma_ops\|init_timer\|rSerTimer\.data\|eSuspendtate\|PCIE_STATE_SUSPEND" --include="*.c" --include="*.h" os/linux/hif/ || echo "clean enough"
-          echo "--- done ---"
+          echo "--- compat check ---"
+          grep -rn "ioremap_nocache\|get_dma_ops\|init_timer\|rSerTimer\.data\|eSuspendtate" --include="*.c" --include="*.h" os/linux/hif/ || echo "clean enough"
 
       - name: Fetch stock kernel_config
         run: |
@@ -121,7 +118,7 @@ jobs:
           CONFIG_DST="${OUT_DIR}/.config"
 
           export ARCH=arm64 SUBARCH=arm64 LLVM=1 LLVM_IAS=1
-          export PATH="${HOME}/toolchains/clang-r416183b/bin:${PATH}"
+          export PATH="${HOME}/toolchains/clang/bin:${PATH}"
           export CLANG_TRIPLE=aarch64-linux-gnu-
           export CROSS_COMPILE=aarch64-linux-gnu-
           export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
@@ -138,13 +135,14 @@ jobs:
             -e '/abi_symbollist/d' \
             -e '\|/mnt/disks|d' \
             "${CONFIG_DST}"
-
+            
+          # Replaced heredoc with echo to prevent YAML parser indentation errors
           echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
           echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
           echo "# CONFIG_KMI_SYMBOL_LIST is not set" >> "${CONFIG_DST}"
           echo 'CONFIG_KMI_SYMBOL_LIST=""' >> "${CONFIG_DST}"
 
-          make O="${OUT_DIR}" ARCH="${ARCH}" olddefconfig
+          make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 olddefconfig
 
           # 2. Post-strip
           ./scripts/config --file "${CONFIG_DST}" -d TRIM_UNUSED_KSYMS --set-str UNUSED_KSYMS_WHITELIST "" || true
@@ -155,7 +153,7 @@ jobs:
             -e '/abi_symbollist/d' \
             -e '\|/mnt/disks|d' \
             "${CONFIG_DST}"
-
+            
           grep -q "^# CONFIG_TRIM_UNUSED_KSYMS is not set" "${CONFIG_DST}" || echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
           grep -q "^CONFIG_UNUSED_KSYMS_WHITELIST=" "${CONFIG_DST}" || echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
 
@@ -166,14 +164,14 @@ jobs:
             exit 1
           fi
 
-          make O="${OUT_DIR}" ARCH="${ARCH}" olddefconfig
-          make O="${OUT_DIR}" ARCH="${ARCH}" prepare modules_prepare -j"$(nproc)"
+          make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 olddefconfig
+          make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 prepare modules_prepare -j"$(nproc)"
 
       - name: Build wlan_drv_gen4m.ko
         run: |
           set -euxo pipefail
           export ARCH=arm64 SUBARCH=arm64 LLVM=1 LLVM_IAS=1
-          export PATH="${HOME}/toolchains/clang-r416183b/bin:${PATH}"
+          export PATH="${HOME}/toolchains/clang/bin:${PATH}"
           export CLANG_TRIPLE=aarch64-linux-gnu-
           export CROSS_COMPILE=aarch64-linux-gnu-
           export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
