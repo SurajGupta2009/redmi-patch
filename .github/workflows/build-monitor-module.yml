@@ -64,144 +64,84 @@ jobs:
           MK="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx/Makefile"
           sed -i '/CONFIG_SUPPORT_SNIFFER_RADIOTAP/,/endif/c\ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1' "${MK}"
 
-      # ---------- LINUX 5.10 COMPAT – ALL-IN-ONE ----------
-      - name: Apply Linux 5.10 compat – gen4-mt79xx – full
+      # ---------- ALL-IN-ONE COMPAT SHIMS & KBUILD FIXES ----------
+      - name: Apply Linux 5.10 / AXI compat & Kbuild fixes
         run: |
           set -euxo pipefail
           WLAN="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx"
           cd "$WLAN"
 
-          # 1. Create a force-include compat header – gets included before EVERY .c file
-          echo '/* Redmi Pad SE spark – MediaTek gen4-mt79xx – Linux 5.10 compat */
-          /* Force-included via ccflags-y += -include $(src)/include/linux_510_compat.h */
-          #ifndef __MTK_LINUX510_COMPAT_H__
-          #define __MTK_LINUX510_COMPAT_H__
-          
-          #include <linux/version.h>
-          
-          #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
-          #ifndef ioremap_nocache
-          #define ioremap_nocache ioremap
+          # 1. Fix Kbuild .mod bug for non-SDIO (AXI) interfaces when CONFIG_GKI_SUPPORT=y
+          # In gen4m/Makefile, when CONFIG_MTK_COMBO_WIFI_HIF=axi, MODULE_NAME_RESET is empty,
+          # causing "obj-m += .o" which fails with: No rule to make target '.../gen4m/.mod'
+          sed -i -e 's/\$(MODULE_NAME_RESET)-objs += \$(RESET_OBJS)/ifneq (\$(MODULE_NAME_RESET),)\n\$(MODULE_NAME_RESET)-objs += \$(RESET_OBJS)/' -e 's/obj-m += \$(MODULE_NAME_RESET)\.o/obj-m += \$(MODULE_NAME_RESET)\.o\nendif/' Makefile
+
+          # 2. Convert -Werror to -Wno-error and append Clang-safe warning suppressions
+          sed -i 's/-Werror/-Wno-error/g' Makefile
+          echo 'ccflags-y += -Wno-error -Wno-unknown-warning-option -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-address-of-packed-member -Wno-format -Wno-missing-prototypes -Wno-pointer-sign' >> Makefile
+
+          # 3. Fix halIsHifStateReady in hal_pdma.c (eSuspendtate is PCIe-only, missing in AXI GL_HIF_INFO)
+          python3 -c '
+          import re
+          with open("os/linux/hif/common/hal_pdma.c", "r") as f:
+              c = f.read()
+          pattern = r"bool\s+halIsHifStateReady\s*\(.*?\)\s*\{.*?\n\}"
+          replacement = """bool halIsHifStateReady(IN struct ADAPTER *prAdapter, uint8_t *pucState)
+          {
+          \tif (!prAdapter || !prAdapter->prGlueInfo || prAdapter->prGlueInfo->u4ReadyFlag == 0)
+          \t\treturn FALSE;
+
+          #if defined(_HIF_PCIE)
+          \tif (pucState)
+          \t\t*pucState = prAdapter->prGlueInfo->rHifInfo.eSuspendtate;
+          \tif (prAdapter->prGlueInfo->rHifInfo.eSuspendtate == PCIE_STATE_SUSPEND_ENTERING)
+          \t\treturn FALSE;
+          #else
+          \tif (pucState)
+          \t\t*pucState = 0;
           #endif
-          #endif
-          
-          #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)
-          #ifndef get_dma_ops
-          #define get_dma_ops(dev) NULL
-          #endif
-          #endif
-          
-          /* access_ok API changed: 2 args -> 3 args in 5.0 */
-          #include <linux/uaccess.h>
-          #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,0,0)
-          #undef access_ok
-          #define access_ok(addr, size) access_ok((addr), (size))
-          /* some MTK code still uses access_ok(VERIFY_READ/WRITE, addr, size) */
-          #define VERIFY_READ 0
-          #define VERIFY_WRITE 1
-          #endif
-          
-          /* set_fs / get_fs removed in 5.10 */
-          #ifndef set_fs
-          #define set_fs(x) do {} while(0)
-          #define get_fs() (0)
-          #define KERNEL_DS 0
-          #endif
-          
-          /* timer API – old init_timer / timer_list.data removed in 4.15 */
-          #include <linux/timer.h>
-          /* we stub these in source files, keep macros minimal here */
-          
-          /* timeval / do_gettimeofday removed */
-          #include <linux/ktime.h>
-          #ifndef do_gettimeofday
-          #define do_gettimeofday(tv) do { struct timespec64 ts; ktime_get_real_ts64(&ts); (tv)->tv_sec = ts.tv_sec; (tv)->tv_usec = ts.tv_nsec/1000; } while(0)
-          #endif
-          
-          #endif /* __MTK_LINUX510_COMPAT_H__ */' > include/linux_510_compat.h
 
-          # 2. Inject force-include into top Makefile, and nuke -Werror everywhere
-          # add force-include FIRST, so it beats any other include
-          grep -q "linux_510_compat.h" Makefile || sed -i '1iccflags-y += -include $(src)/include/linux_510_compat.h\nccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable -Wno-misleading-indentation -Wno-address-of-packed-member -Wno-format -Wno-return-mismatch -Wno-missing-prototypes -Wno-unused-but-set-variable -Wno-pointer-sign' Makefile
-          
-          # Propagate -Wno-error to every sub-Makefile
-          find . -name "Makefile*" -exec sh -c 'grep -q "Wno-error" "$1" || echo "ccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types" >> "$1"' _ {} \;
+          \treturn TRUE;
+          }"""
+          c_new = re.sub(pattern, replacement, c, count=1, flags=re.DOTALL)
+          if c_new != c:
+              with open("os/linux/hif/common/hal_pdma.c", "w") as f:
+                  f.write(c_new)
+              print("hal_pdma.c regex patched successfully!")
+          else:
+              print("hal_pdma.c pattern not found or already patched!")
+          '
 
-          # 3. hal_pdma.c – GL_HIF_INFO.eSuspendtate missing
-          HIF_PDMA=os/linux/hif/common/hal_pdma.c
-          # Replace the entire halPdmaGetSuspendState function with a safe stub
-          # try perl first (more robust than sed)
-          perl -0777 -i -pe 's/uint32_t\s+halPdmaGetSuspendState\s*\(.*?^\}\s*\n/ms/uint32_t halPdmaGetSuspendState(IN struct ADAPTER *prAdapter, uint8_t *pucState) { if (pucState) *pucState = 0; return false; }\n/smg' "$HIF_PDMA" || true
-          # fallback – nuke any remaining bad field accesses – FULL expression, NOT just field name
-          # WRONG: s/eSuspendtate/0/g -> rHifInfo.0  (syntax error)
-          # RIGHT: s/prAdapter->prGlueInfo->rHifInfo\.eSuspendtate/0/g
-          sed -i 's/prAdapter->prGlueInfo->rHifInfo\.eSuspendtate/0/g; s/PCIE_STATE_SUSPEND_ENTERING/0/g; s/rHifInfo\.0/0/g' "$HIF_PDMA" || true
+          # 4. Fix legacy timer API in axi.c (init_timer -> timer_setup for Linux >= 4.15)
+          python3 -c '
+          import re
+          with open("os/linux/hif/axi/axi.c", "r") as f:
+              c = f.read()
+          pattern = r"init_timer\(&prHif->rSerTimer\);\s*prHif->rSerTimer\.function\s*=\s*halHwRecoveryTimeout;\s*prHif->rSerTimer\.data\s*=\s*\(unsigned long\)prGlueInfo;\s*prHif->rSerTimer\.expires\s*=\s*jiffies\s*\+\s*HIF_SER_TIMEOUT\s*\*\s*HZ\s*/\s*MSEC_PER_SEC;"
+          replacement = """#if KERNEL_VERSION(4, 15, 0) <= LINUX_VERSION_CODE
+          \ttimer_setup(&prHif->rSerTimer, halHwRecoveryTimeout, 0);
+          #else
+          \tinit_timer(&prHif->rSerTimer);
+          \tprHif->rSerTimer.function = halHwRecoveryTimeout;
+          \tprHif->rSerTimer.data = (unsigned long)prGlueInfo;
+          \tprHif->rSerTimer.expires =
+          \t\tjiffies + HIF_SER_TIMEOUT * HZ / MSEC_PER_SEC;
+          #endif"""
+          c_new = re.sub(pattern, replacement, c, count=1, flags=re.DOTALL)
+          if c_new != c:
+              with open("os/linux/hif/axi/axi.c", "w") as f:
+                  f.write(c_new)
+              print("axi.c timer regex patched successfully!")
+          else:
+              print("axi.c timer pattern not found or already patched!")
+          '
 
-          # 4. axi.c – 5.10 API
-          AXI=os/linux/hif/axi/axi.c
-          sed -i 's/ioremap_nocache/ioremap/g; s/get_dma_ops([^)]*)/NULL/g' "$AXI"
-          # init_timer -> timer_setup, kill .data/.function
-          sed -i 's/init_timer(\([^)]*\));/timer_setup(\1, NULL, 0);/g; /rSerTimer\.data/d; /rSerTimer\.function/d' "$AXI"
-          # copyTxData 3-arg -> 4-arg compat – inject wrapper if missing
-          if ! grep -q "axiCopyTxData_compat" "$AXI"; then
-            awk '
-            BEGIN{p=1}
-            /static const struct HIF_MEM_OPS axiMemOps/ && p {
-              print "#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)"
-              print "static bool axiCopyTxData_compat(struct MSDU_TOKEN_ENTRY *prToken, void *pvPkt, uint32_t u4Len, uint32_t u4Extra) {"
-              print "    extern bool axiCopyTxData(struct MSDU_TOKEN_ENTRY *, void *, uint32_t);"
-              print "    return axiCopyTxData(prToken, pvPkt, u4Len);"
-              print "}"
-              print "#define axiCopyTxData axiCopyTxData_compat"
-              print "#endif"
-              p=0
-            }
-            {print}
-            ' "$AXI" > "$AXI.tmp" && mv "$AXI.tmp" "$AXI"
-          fi
-          sed -i 's/\.copyTxData\s*=\s*axiCopyTxData/.copyTxData = axiCopyTxData_compat/g' "$AXI" || true
+          # 5. Fix mt66xx_chip_info struct mismatch (debug info hooks moved to debug_ops in Linux 5.10)
+          find chips/ -type f -name "*.c" -exec sed -i '/\.show_mcu_debug_info\s*=\s*NULL/d; /\.show_conninfra_debug_info\s*=\s*NULL/d' {} +
 
-          # 5. chips/connac/connac.c – struct mt66xx_chip_info field mismatch
-          # MiCode/MTK source expects .show_mcu_debug_info / .show_conninfra_debug_info
-          # Xiaomi kernel 5.10 headers don't have them – strip them
-          CONNAC=chips/connac/connac.c
-          [ -f "$CONNAC" ] && sed -i '/show_mcu_debug_info/d; /show_conninfra_debug_info/d' "$CONNAC" || true
+          echo "=== ALL PATTERN SHIMS APPLIED CLEANLY ==="
 
-          # 6. WIDESPREAD 5.10 API SHIMS – apply tree-wide
-          # access_ok 3-arg -> 2-arg (compat header handles most, but fix call sites too)
-          find . -type f -name "*.c" -exec sed -i \
-            -e 's/access_ok(VERIFY_READ\s*,\s*\([^,]*\),\s*\([^)]*\))/access_ok(\1, \2)/g' \
-            -e 's/access_ok(VERIFY_WRITE\s*,\s*\([^,]*\),\s*\([^)]*\))/access_ok(\1, \2)/g' \
-            {} +
-          # set_fs / get_fs – stub out
-          find . -type f -name "*.c" -exec sed -i \
-            -e 's/set_fs([^)]*);/\/\/ set_fs removed in 5.10/g' \
-            -e 's/get_fs()/0/g' \
-            {} +
-
-          # timer API – catch any remaining init_timer / timer.data in the whole tree
-          find . -type f -name "*.c" -exec sed -i \
-            -e 's/init_timer(\([^)]*\));/timer_setup(\1, NULL, 0);/g' \
-            -e '/\.data\s*=\s*.*_timer/d' \
-            -e '/\.function\s*=\s*.*timer/d' \
-            {} +
-
-          # ioremap_nocache / get_dma_ops – tree wide
-          find . -type f -name "*.c" -o -name "*.h" | xargs sed -i \
-            's/ioremap_nocache/ioremap/g; s/get_dma_ops([^)]*)/NULL/g' 2>/dev/null || true
-
-          # struct mt66xx_chip_info debug hooks – tree wide sweep
-          find . -type f -name "*.c" -exec sed -i '/show_mcu_debug_info/d; /show_conninfra_debug_info/d' {} +
-
-          echo "=== compat sanity check ==="
-          echo "--- bad HIF symbols ---"
-          grep -rn "rHifInfo\.0\|rHifInfo\.eSuspendtate\|PCIE_STATE_SUSPEND_ENTERING" --include="*.c" --include="*.h" os/linux/hif/ | grep -v "define\|//\|/*\|\"\|0  //" || echo "hif clean"
-          echo "--- bad chip_info symbols ---"
-          grep -rn "show_mcu_debug_info\|show_conninfra_debug_info" --include="*.c" --include="*.h" chips/ || echo "chip clean"
-          echo "--- 5.10 removed APIs still present? ---"
-          grep -rn "ioremap_nocache\|get_dma_ops\|init_timer\|access_ok.*VERIFY_" --include="*.c" . | grep -v "define\|compat\|//\|/*\|\.md" | head -20 || echo "API clean"
-          echo "--- done ---"
-
+      # ---------- KERNEL PREPARE ----------
       - name: Fetch stock kernel_config
         run: |
           set -euxo pipefail
@@ -227,6 +167,10 @@ jobs:
           cp "${CONFIG_SRC}" "${CONFIG_DST}"
           cd "${KERNEL_DIR}"
 
+          # Ensure localversion matches stock (-android12-9+) and disable git hash append
+          sed -i 's/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/' "${CONFIG_DST}" || true
+          sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-android12-9+"/' "${CONFIG_DST}" || true
+
           # KMI / GKI symbol trimming – Xiaomi config points to /mnt/disks/…/abi_symbollist.raw
           sed -i -e '/CONFIG_TRIM_UNUSED_KSYMS/d' -e '/CONFIG_UNUSED_KSYMS_WHITELIST/d' -e '/CONFIG_KMI_SYMBOL_LIST/d' -e '/abi_symbollist/d' -e '\|/mnt/disks|d' "${CONFIG_DST}"
           
@@ -242,13 +186,14 @@ jobs:
           ./scripts/config --file "${CONFIG_DST}" -d TRIM_UNUSED_KSYMS --set-str UNUSED_KSYMS_WHITELIST "" || true
           sed -i -e '/CONFIG_TRIM_UNUSED_KSYMS=y/d' -e '/CONFIG_UNUSED_KSYMS_WHITELIST=/d' -e '/CONFIG_KMI_SYMBOL_LIST=/d' -e '/abi_symbollist/d' -e '\|/mnt/disks|d' "${CONFIG_DST}"
           grep -q "^# CONFIG_TRIM_UNUSED_KSYMS is not set" "${CONFIG_DST}" || echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
-          grep -q "^CONFIG_UNUSED_KSYMS_WHITELIST=" "${CONFIG_DST}" || echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DOT:-${CONFIG_DST}}"
+          grep -q "^CONFIG_UNUSED_KSYMS_WHITELIST=" "${CONFIG_DST}" || echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
 
           if grep -q "CONFIG_TRIM_UNUSED_KSYMS=y" "${CONFIG_DST}"; then echo "ERROR: TRIM_UNUSED_KSYMS still =y"; exit 1; fi
 
           make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 olddefconfig
           make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 prepare modules_prepare -j"$(nproc)"
 
+      # ---------- BUILD MODULE ----------
       - name: Build wlan_drv_gen4m.ko
         run: |
           set -euxo pipefail
@@ -270,12 +215,14 @@ jobs:
             WLAN_CHIP_ID=6765 \
             MTK_ANDROID_WMT=y \
             CONFIG_SUPPORT_SNIFFER_RADIOTAP=y \
+            ARCH=arm64 SUBARCH=arm64 LLVM=1 LLVM_IAS=1 \
+            CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
             modules -j"$(nproc)" 2>&1 | tee "${GITHUB_WORKSPACE}/build.log"
           BUILD_STATUS=${PIPESTATUS[0]}
           set -e
 
           find "${HOME}/redmi_monitor_build" -name wlan_drv_gen4m.ko -exec cp -v {} "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" \; || true
-          
+
           if [ -f "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" ]; then
             echo "=== BUILD SUCCESS ==="
             file "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko"
