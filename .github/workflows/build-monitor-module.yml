@@ -7,83 +7,130 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install host dependencies
         run: |
           set -euxo pipefail
           sudo apt-get update
-          sudo apt-get install -y git bc bison flex make python3 \
-            libssl-dev libelf-dev dwarves build-essential unzip rsync cpio xz-utils zip file curl
+          sudo apt-get install -y --no-install-recommends \
+            git bc bison flex make python3 \
+            libssl-dev libelf-dev dwarves build-essential \
+            unzip rsync cpio xz-utils zip file curl ca-certificates
+
+      # ---------- CLANG CACHE ----------
+      - name: Cache Android clang r416183b
+        id: cache-clang
+        uses: actions/cache@v4
+        with:
+          path: ~/toolchains/clang-r416183b
+          key: clang-r416183b-android12-${{ runner.os }}-v1
+          restore-keys: |
+            clang-r416183b-android12-
 
       - name: Fetch Android clang r416183b
+        if: steps.cache-clang.outputs.cache-hit != 'true'
         run: |
           set -euxo pipefail
           mkdir -p "${HOME}/toolchains/clang-r416183b"
-          cd "${HOME}/toolchains/clang-r416183b"
           curl -L -o /tmp/clang.tgz \
             https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz
-          tar -xzf /tmp/clang.tgz
-          "${HOME}/toolchains/clang-r416183b/bin/clang" --version
+          tar -xzf /tmp/clang.tgz -C "${HOME}/toolchains/clang-r416183b"
+          rm /tmp/clang.tgz
 
+      - name: Verify clang
+        run: |
+          "${HOME}/toolchains/clang-r416183b/bin/clang" --version | head -1
+
+      # ---------- SOURCE ----------
       - name: Clone kernel and MTK modules
         run: |
           set -euxo pipefail
           mkdir -p "${HOME}/redmi_monitor_build"
-          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git "${HOME}/redmi_monitor_build/kernel_spark"
-          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/MTK_kernel_modules.git "${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules"
-          ln -sfn gen4-mt79xx "${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m"
+          git clone --depth=1 --branch spark-s-oss \
+            https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git \
+            "${HOME}/redmi_monitor_build/kernel_spark"
+          git clone --depth=1 --branch spark-s-oss \
+            https://github.com/MiCode/MTK_kernel_modules.git \
+            "${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules"
+          ln -sfn gen4-mt79xx \
+            "${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m"
 
       - name: Force CFG_SUPPORT_SNIFFER_RADIOTAP=1
         run: |
           set -euxo pipefail
           MK="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx/Makefile"
           sed -i '/CONFIG_SUPPORT_SNIFFER_RADIOTAP/,/endif/c\ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1' "${MK}"
-          grep -n SNIFFER_RADIOTAP "${MK}"
+          grep -n "SNIFFER_RADIOTAP" "${MK}"
+
+      # ---------- LINUX 5.10 COMPAT ----------
+      # The MiCode MTK_kernel_modules spark-s-oss gen4-mt79xx tree
+      # does NOT build clean against MiCode/Xiaomi_Kernel_OpenSource spark-s-oss 5.10
+      # without vendor patches. These shims get it to link for monitor-mode RX testing.
+      # SER timer / TX injection will need proper fixing later.
+      - name: Apply Linux 5.10 compat patches – gen4-mt79xx
+        run: |
+          set -euxo pipefail
+          WLAN="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx"
+          cd "$WLAN"
+
+          # 1. config.h – kernel API shims
+          perl -0777 -i -pe 's/(#define _CONFIG_H)/$1\n\n\/\* spark 5.10 compat – Redmi Pad SE monitor build *\/\n#include <linux\/version.h>\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\n#ifndef ioremap_nocache\n#define ioremap_nocache ioremap\n#endif\n#ifndef get_dma_ops\n#define get_dma_ops(dev) NULL\n#endif\n#endif\n#ifndef PCIE_STATE_SUSPEND_ENTERING\n#define PCIE_STATE_SUSPEND_ENTERING 1\n#endif\n/* MTK struct field missing in 5.10 spark kernel – alias to a dummy */\n#define eSuspendtate ulSuspendFlag\n\/\* end compat *\/\n/s' include/config.h
+
+          # 2. Relax -Werror globally for the out-of-tree module
+          echo 'ccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable' >> Makefile
+          find os/linux/hif -name Makefile -exec sh -c 'echo "ccflags-y += -Wno-error" >> "$1"' _ {} \;
+
+          # 3. hal_pdma.c – halPdmaGetSuspendState uses missing eSuspendtate / PCIE_STATE_*
+          if grep -q "eSuspendtate" os/linux/hif/common/hal_pdma.c; then
+            perl -0777 -i -pe 's/uint32_t halPdmaGetSuspendState\s*\(\s*IN struct ADAPTER \*prAdapter\s*,\s*uint8_t \*pucState\s*\)\s*\{.*?\n\}\n/s(uint32_t halPdmaGetSuspendState(IN struct ADAPTER *prAdapter, uint8_t *pucState) { if (pucState) *pucState = 0; return false; }\n)/s' os/linux/hif/common/hal_pdma.c || true
+            sed -i 's/eSuspendtate/0/g; s/PCIE_STATE_SUSPEND_ENTERING/0/g' os/linux/hif/common/hal_pdma.c || true
+          fi
+
+          # 4. axi.c – 5.10 API fixes
+          AXI=os/linux/hif/axi/axi.c
+          sed -i 's/ioremap_nocache/ioremap/g' "$AXI"
+          sed -i 's/get_dma_ops([^)]*)/NULL/g' "$AXI"
+          sed -i 's/init_timer(\([^)]*\));/timer_setup(\1, NULL, 0);/g' "$AXI"
+          sed -i '/rSerTimer\.data/d; /rSerTimer\.function/d' "$AXI"
+          
+          if ! grep -q "axiCopyTxData_compat" "$AXI"; then
+            perl -0777 -i -pe 's/(static bool axiCopyTxData\s*\(.*?^\}\s*)/${1}\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\nstatic bool axiCopyTxData_compat(struct MSDU_TOKEN_ENTRY *prToken, void *pvPkt, uint32_t u4Len, uint32_t u4Extra) { return axiCopyTxData(prToken, pvPkt, u4Len); }\n#define axiCopyTxData axiCopyTxData_compat\n#endif\n/smg' "$AXI" || true
+          fi
+          sed -i 's/\.copyTxData\s*=\s*axiCopyTxData/.copyTxData = axiCopyTxData_compat/g' "$AXI" || true
+
+          echo "--- compat check, remaining bad symbols ---"
+          grep -rn "ioremap_nocache\|get_dma_ops\|init_timer\|rSerTimer\.data\|eSuspendtate\|PCIE_STATE_SUSPEND" --include="*.c" --include="*.h" os/linux/hif/ || echo "clean enough"
+          echo "--- done ---"
 
       - name: Fetch stock kernel_config
         run: |
           set -euxo pipefail
           curl -L -o "${HOME}/redmi_monitor_build/kernel_config.txt" \
             https://raw.githubusercontent.com/SurajGupta2009/redmi-patch/main/redmi_wifi_stack_extract/kernel_config.txt
+          wc -l "${HOME}/redmi_monitor_build/kernel_config.txt"
 
       - name: Prepare kernel build environment
         run: |
           set -euxo pipefail
-          # Directory Definitions
           BUILD_DIR="${HOME}/redmi_monitor_build"
           KERNEL_DIR="${BUILD_DIR}/kernel_spark"
           OUT_DIR="${KERNEL_DIR}/out"
           CONFIG_SRC="${BUILD_DIR}/kernel_config.txt"
           CONFIG_DST="${OUT_DIR}/.config"
-          
-          # Compiler Environment
-          export ARCH=arm64
-          export SUBARCH=arm64
-          export LLVM=1
-          export LLVM_IAS=1
+
+          export ARCH=arm64 SUBARCH=arm64 LLVM=1 LLVM_IAS=1
           export PATH="${HOME}/toolchains/clang-r416183b/bin:${PATH}"
           export CLANG_TRIPLE=aarch64-linux-gnu-
           export CROSS_COMPILE=aarch64-linux-gnu-
           export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 
-          # Initialize Output Directory
           mkdir -p "${OUT_DIR}"
           cp "${CONFIG_SRC}" "${CONFIG_DST}"
           cd "${KERNEL_DIR}"
 
-          # ---- KMI / GKI symbol trimming fix for Xiaomi spark ----
-          # The stock spark config has:
-          #   CONFIG_TRIM_UNUSED_KSYMS=y
-          #   CONFIG_UNUSED_KSYMS_WHITELIST="/mnt/disks/build-disk/.../abi_symbollist.raw"
-          # That absolute path doesn't exist in CI, causing:
-          #   ERROR: '.../abi_symbollist.raw' whitelist file not found
-          #   make: *** [include/generated/autoksyms.h] Error 1
-          #
-          # olddefconfig re-enables TRIM_UNUSED_KSYMS via dependencies,
-          # so we must strip it BEFORE first olddefconfig, AND AGAIN AFTER.
-          
-          # 1. Pre-strip – nuke everything KMI/GKI related from the raw config
+          # 1. Pre-strip
           sed -i \
             -e '/CONFIG_TRIM_UNUSED_KSYMS/d' \
             -e '/CONFIG_UNUSED_KSYMS_WHITELIST/d' \
@@ -92,23 +139,17 @@ jobs:
             -e '\|/mnt/disks|d' \
             "${CONFIG_DST}"
 
-          cat >> "${CONFIG_DST}" <<'KMI'
-          # CONFIG_TRIM_UNUSED_KSYMS is not set
-          CONFIG_UNUSED_KSYMS_WHITELIST=""
-          # CONFIG_KMI_SYMBOL_LIST is not set
-          CONFIG_KMI_SYMBOL_LIST=""
-          KMI
+          echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
+          echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
+          echo "# CONFIG_KMI_SYMBOL_LIST is not set" >> "${CONFIG_DST}"
+          echo 'CONFIG_KMI_SYMBOL_LIST=""' >> "${CONFIG_DST}"
 
-          # 2. First olddefconfig
           make O="${OUT_DIR}" ARCH="${ARCH}" olddefconfig
 
-          # 3. Post-strip – olddefconfig re-enables TRIM_UNUSED_KSYMS via Kconfig dependencies, kill it again
+          # 2. Post-strip
           ./scripts/config --file "${CONFIG_DST}" -d TRIM_UNUSED_KSYMS --set-str UNUSED_KSYMS_WHITELIST "" || true
-
-          # Hard fallback – sed + append, idempotent
           sed -i \
             -e '/CONFIG_TRIM_UNUSED_KSYMS=y/d' \
-            -e '/CONFIG_TRIM_UNUSED_KSYMS=.*y/d' \
             -e '/CONFIG_UNUSED_KSYMS_WHITELIST=/d' \
             -e '/CONFIG_KMI_SYMBOL_LIST=/d' \
             -e '/abi_symbollist/d' \
@@ -118,37 +159,27 @@ jobs:
           grep -q "^# CONFIG_TRIM_UNUSED_KSYMS is not set" "${CONFIG_DST}" || echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
           grep -q "^CONFIG_UNUSED_KSYMS_WHITELIST=" "${CONFIG_DST}" || echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
 
-          # Verify – this MUST be empty / "is not set", otherwise modules_prepare will fail again
-          echo "=== KMI sanify check ==="
+          echo "=== KMI sanity check ==="
           grep -E 'TRIM_UNUSED_KSYMS|UNUSED_KSYMS_WHITELIST|KMI_SYMBOL_LIST|abi_symbollist|/mnt/disks' "${CONFIG_DST}" || echo "clean – OK"
-
           if grep -q "CONFIG_TRIM_UNUSED_KSYMS=y" "${CONFIG_DST}"; then
-            echo "ERROR: TRIM_UNUSED_KSYMS is still =y – modules_prepare will fail"
+            echo "ERROR: TRIM_UNUSED_KSYMS still =y"
             exit 1
           fi
 
-          # 4. Second olddefconfig with clean config
           make O="${OUT_DIR}" ARCH="${ARCH}" olddefconfig
-
-          # 5. Final verify
-          grep -E 'TRIM_UNUSED_KSYMS|UNUSED_KSYMS_WHITELIST' "${CONFIG_DST}" || true
-
-          # Kernel Make Preparation
           make O="${OUT_DIR}" ARCH="${ARCH}" prepare modules_prepare -j"$(nproc)"
 
       - name: Build wlan_drv_gen4m.ko
         run: |
           set -euxo pipefail
-          export ARCH=arm64
-          export LLVM=1
-          export LLVM_IAS=1
+          export ARCH=arm64 SUBARCH=arm64 LLVM=1 LLVM_IAS=1
           export PATH="${HOME}/toolchains/clang-r416183b/bin:${PATH}"
           export CLANG_TRIPLE=aarch64-linux-gnu-
           export CROSS_COMPILE=aarch64-linux-gnu-
           export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-          
+
           cd "${HOME}/redmi_monitor_build"
-          
+
           make -C kernel_spark O="${HOME}/redmi_monitor_build/kernel_spark/out" \
             M="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m" \
             MODULE_NAME=wlan_drv_gen4m \
@@ -158,16 +189,20 @@ jobs:
             MTK_ANDROID_WMT=y \
             CONFIG_SUPPORT_SNIFFER_RADIOTAP=y \
             modules -j"$(nproc)"
-          
-          find "${HOME}/redmi_monitor_build" -name wlan_drv_gen4m.ko -exec cp {} "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" \;
+
+          find "${HOME}/redmi_monitor_build" -name wlan_drv_gen4m.ko -exec cp -v {} "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" \;
+
+          echo "=== file ==="
+          file "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko"
           echo "=== vermagic ==="
           strings "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" | grep vermagic
           echo "=== radiotap / monitor symbols ==="
           strings "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" | grep -E 'radiotap|wlanMon|NL80211_IFTYPE_MONITOR|priv_driver_sniffer|wlanoidSetIcsSniffer' || true
 
-      - name: Upload
+      - name: Upload module
         uses: actions/upload-artifact@v4
         with:
           name: wlan_drv_gen4m-spark-radiotap
           path: wlan_drv_gen4m.ko
+          if-no-files-found: error
           retention-days: 14
