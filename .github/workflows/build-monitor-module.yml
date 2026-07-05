@@ -1,190 +1,77 @@
 name: Build wlan_drv_gen4m.ko (radiotap monitor)
-
 on:
   workflow_dispatch:
-  push:
-    branches: [ main, master ]
-    paths:
-      - 'patches/**'
-      - 'scripts/**'
-      - 'magisk-module/**'
-      - '.github/workflows/build-monitor-module.yml'
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     timeout-minutes: 90
-
     steps:
-      - name: Checkout this repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install host dependencies
+      - name: Install deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            git bc bison flex make python3 python3-pip \
-            libssl-dev libelf-dev dwarves build-essential unzip rsync cpio xz-utils \
-            ca-certificates curl zip file
+          sudo apt-get install -y git bc bison flex make python3 \
+            libssl-dev libelf-dev dwarves build-essential unzip rsync cpio xz-utils zip file curl
 
-      - name: Fetch Android prebuilt clang
+      - name: Fetch Android clang r416183b
         run: |
           set -eux
-          mkdir -p "$HOME/toolchains/clang-r487747c"
-          cd "$HOME/toolchains/clang-r487747c"
-          curl -L -o /tmp/clang-r487747c.tar.gz \
-            'https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r487747c.tar.gz'
-          tar -xzf /tmp/clang-r487747c.tar.gz
-          test -x "$HOME/toolchains/clang-r487747c/bin/clang"
-          "$HOME/toolchains/clang-r487747c/bin/clang" --version | head -n 1
+          mkdir -p $HOME/toolchains/clang-r416183b
+          cd $HOME/toolchains/clang-r416183b
+          curl -L -o /tmp/clang.tgz \
+            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz
+          tar -xzf /tmp/clang.tgz
+          $HOME/toolchains/clang-r416183b/bin/clang --version
 
-      - name: Clone kernel source (MiCode spark-s-oss)
+      - name: Clone kernel + MTK modules
         run: |
-          set -eux
-          mkdir -p "$HOME/redmi_monitor_build"
-          git clone --depth=1 --branch spark-s-oss \
-            https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git \
-            "$HOME/redmi_monitor_build/kernel_spark"
+          mkdir -p $HOME/redmi_monitor_build
+          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git $HOME/redmi_monitor_build/kernel_spark
+          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/MTK_kernel_modules.git $HOME/redmi_monitor_build/vendor/mediatek/kernel_modules
+          ln -sfn gen4-mt79xx $HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m
 
-      - name: Clone MTK kernel_modules (spark-s-oss)
+      - name: Force CFG_SUPPORT_SNIFFER_RADIOTAP=1
         run: |
-          set -eux
-          mkdir -p "$HOME/redmi_monitor_build/vendor/mediatek"
-          git clone --depth=1 --branch spark-s-oss \
-            https://github.com/MiCode/MTK_kernel_modules.git \
-            "$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules"
+          MK=$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx/Makefile
+          sed -i '/CONFIG_SUPPORT_SNIFFER_RADIOTAP/,/endif/c\ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1' "$MK"
+          grep -n SNIFFER_RADIOTAP "$MK"
 
-      - name: Create gen4m symlink to gen4-mt79xx
+      - name: Fetch stock kernel_config
         run: |
-          set -eux
-          GEN4_DIR="$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core"
-          ln -sfn gen4-mt79xx "$GEN4_DIR/gen4m"
-          ls -la "$GEN4_DIR/"
+          curl -L -o $HOME/redmi_monitor_build/kernel_config.txt \
+            https://raw.githubusercontent.com/SurajGupta2009/redmi-patch/main/redmi_wifi_stack_extract/kernel_config.txt
 
-      - name: Apply radiotap-monitor Makefile patch
+      - name: Prepare kernel
         run: |
-          set -eux
-          GEN4M_MK="$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx/Makefile"
-          cp "$GEN4M_MK" "$GEN4M_MK.bak"
-          python3 -c '
-          import sys
-          from pathlib import Path
-          p = Path(sys.argv[1])
-          s = p.read_text()
-          old = "ifeq ($(CONFIG_SUPPORT_SNIFFER_RADIOTAP), y)\n    ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\n    ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1\nelse\n    ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=0\n    ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=0\nendif"
-          new = "# Force radiotap monitor support for Redmi Pad SE spark research build\nccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1"
-          if old in s:
-              s = s.replace(old, new)
-          elif "Force radiotap monitor support for Redmi Pad SE" not in s:
-              s += "\n" + new + "\n"
-          p.write_text(s)
-          print("Makefile patched:", p)
-          ' "$GEN4M_MK"
-          grep -nE 'CFG_SUPPORT_SNIFFER_RADIOTAP|CFG_SUPPORT_PDMA_SCATTER' "$GEN4M_MK"
-
-      - name: Fetch stock kernel_config.txt from redmi-patch repo
-        run: |
-          set -eux
-          mkdir -p "$HOME/redmi_monitor_build"
-          curl -L -o "$HOME/redmi_monitor_build/kernel_config.txt" \
-            'https://raw.githubusercontent.com/SurajGupta2009/redmi-patch/main/redmi_wifi_stack_extract/kernel_config.txt'
-          test -s "$HOME/redmi_monitor_build/kernel_config.txt"
-          head -5 "$HOME/redmi_monitor_build/kernel_config.txt"
-          wc -l "$HOME/redmi_monitor_build/kernel_config.txt"
-
-      - name: Fetch stock module for vermagic comparison
-        run: |
-          set -eux
-          curl -L -o /tmp/extract.tgz \
-            'https://github.com/SurajGupta2009/redmi-patch/raw/main/redmi_wifi_stack_extract_20260705_111648.tar.gz'
-          cd /tmp
-          tar -xzf /tmp/extract.tgz
-          STOCK=$(find /tmp -path '*wlan_drv_gen4m.ko' -type f | head -n1)
-          test -n "$STOCK"
-          cp "$STOCK" "$HOME/redmi_monitor_build/stock_wlan_drv_gen4m.ko"
-          strings "$HOME/redmi_monitor_build/stock_wlan_drv_gen4m.ko" | grep vermagic
-
-      - name: Prepare kernel build environment
-        run: |
-          set -eux
-          export ARCH=arm64
-          export SUBARCH=arm64
-          export LLVM=1
-          export LLVM_IAS=1
-          export PATH="$HOME/toolchains/clang-r487747c/bin:$PATH"
-          export CLANG_TRIPLE=aarch64-linux-gnu-
-          export CROSS_COMPILE=aarch64-linux-gnu-
-          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-
-          mkdir -p "$HOME/redmi_monitor_build/kernel_spark/out"
-          cp "$HOME/redmi_monitor_build/kernel_config.txt" "$HOME/redmi_monitor_build/kernel_spark/out/.config"
-
-          cd "$HOME/redmi_monitor_build/kernel_spark"
-          make O=out ARCH=arm64 olddefconfig
-          make O=out ARCH=arm64 prepare modules_prepare
-
-      - name: Build patched wlan_drv_gen4m.ko
-        run: |
-          set -euxo pipefail
-          export ARCH=arm64
-          export SUBARCH=arm64
-          export LLVM=1
-          export LLVM_IAS=1
-          export PATH="$HOME/toolchains/clang-r487747c/bin:$PATH"
-          export CLANG_TRIPLE=aarch64-linux-gnu-
-          export CROSS_COMPILE=aarch64-linux-gnu-
-          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-
-          cd "$HOME/redmi_monitor_build"
-          make -C kernel_spark O="$HOME/redmi_monitor_build/kernel_spark/out" \
-            M="$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m" \
-            KERNEL_OUT="$HOME/redmi_monitor_build/kernel_spark/out" \
-            MODULE_NAME=wlan_drv_gen4m \
-            CONFIG_MTK_COMBO_WIFI_HIF=axi \
-            MTK_COMBO_CHIP=CONNAC \
-            WLAN_CHIP_ID=6765 \
-            MTK_ANDROID_WMT=y \
-            CONFIG_SUPPORT_SNIFFER_RADIOTAP=y \
-            modules 2>&1 | tee "$GITHUB_WORKSPACE/build.log"
-
-      - name: Locate and verify patched module
-        run: |
-          set -eux
+          export ARCH=arm64 LLVM=1 LLVM_IAS=1
+          export PATH=$HOME/toolchains/clang-r416183b/bin:$PATH
+          export CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+          cd $HOME/redmi_monitor_build/kernel_spark
           mkdir -p out
-          PATCHED=$(find "$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m" \
-                    -name 'wlan_drv_gen4m.ko' -type f | head -n1)
-          echo "Patched module: $PATCHED"
-          test -n "$PATCHED"
-          cp "$PATCHED" out/wlan_drv_gen4m.ko
+          cp $HOME/redmi_monitor_build/kernel_config.txt out/.config
+          make O=out ARCH=arm64 olddefconfig
+          make O=out ARCH=arm64 prepare modules_prepare -j$(nproc)
 
-          echo '==== file ===='
-          file out/wlan_drv_gen4m.ko
-          echo '==== vermagic ===='
-          strings out/wlan_drv_gen4m.ko | grep vermagic
-          echo '==== radiotap/monitor strings ===='
-          strings out/wlan_drv_gen4m.ko | grep -iE 'radiotap|CFG_SUPPORT_SNIFFER_RADIOTAP|wlanoidSetIcsSniffer|priv_driver_sniffer' | head -50
-
-          STOCK_VM=$(strings "$HOME/redmi_monitor_build/stock_wlan_drv_gen4m.ko" | grep 'vermagic=' | head -1 || true)
-          PATCHED_VM=$(strings out/wlan_drv_gen4m.ko | grep 'vermagic=' | head -1 || true)
-          echo "Stock:   $STOCK_VM"
-          echo "Patched: $PATCHED_VM"
-          if [ "$STOCK_VM" != "$PATCHED_VM" ]; then
-            echo 'WARN: vermagic differs; module may not load on-device.'
-          fi
-
-      - name: Package as Magisk module
+      - name: Build wlan_drv_gen4m.ko
         run: |
-          set -eux
-          chmod +x scripts/package_magisk_module.sh
-          ./scripts/package_magisk_module.sh out/wlan_drv_gen4m.ko
+          export ARCH=arm64 LLVM=1 LLVM_IAS=1
+          export PATH=$HOME/toolchains/clang-r416183b/bin:$PATH
+          export CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+          cd $HOME/redmi_monitor_build
+          make -C kernel_spark O=$HOME/redmi_monitor_build/kernel_spark/out \
+            M=$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m \
+            MODULE_NAME=wlan_drv_gen4m \
+            CONFIG_MTK_COMBO_WIFI_HIF=axi MTK_COMBO_CHIP=CONNAC WLAN_CHIP_ID=6765 MTK_ANDROID_WMT=y \
+            CONFIG_SUPPORT_SNIFFER_RADIOTAP=y \
+            modules -j$(nproc)
+          find $HOME/redmi_monitor_build -name wlan_drv_gen4m.ko -exec cp {} $GITHUB_WORKSPACE/wlan_drv_gen4m.ko \;
+          strings $GITHUB_WORKSPACE/wlan_drv_gen4m.ko | grep -E 'vermagic|radiotap|wlanMon'
 
-      - name: Upload build artifacts
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: redmi-wifi-monitor-spark-build
-          path: |
-            out/wlan_drv_gen4m.ko
-            redmi-wifi-monitor-spark-*.zip
-            build.log
-          if-no-files-found: error
+          name: wlan_drv_gen4m-spark-radiotap
+          path: wlan_drv_gen4m.ko
           retention-days: 14
