@@ -165,6 +165,11 @@ jobs:
           cp "${CONFIG_SRC}" "${CONFIG_DST}"
           cd "${KERNEL_DIR}"
 
+          # Disable setlocalversion script so it does NOT append an extra '+' when the git tree is dirty
+          echo '#!/bin/sh' > scripts/setlocalversion
+          echo 'echo ""' >> scripts/setlocalversion
+          chmod +x scripts/setlocalversion
+
           # Ensure localversion matches stock (-android12-9+) and disable git hash append
           sed -i 's/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/' "${CONFIG_DST}" || true
           sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-android12-9+"/' "${CONFIG_DST}" || true
