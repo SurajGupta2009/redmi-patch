@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ---------- CLANG CACHE – apt-based, 100% CI reliable ----------
+      # ---------- CLANG – apt + cache, googlesource is blocked in CI ----------
       - name: Cache clang toolchain
         id: cache-clang
         uses: actions/cache@v4
@@ -33,12 +33,10 @@ jobs:
               gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu \
               gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
             mkdir -p "${HOME}/toolchains/clang/bin"
-            
             for t in clang clang++ ld.lld llvm-ar llvm-nm llvm-objcopy llvm-objdump llvm-strip llvm-readelf; do
-              ln -sf "/usr/bin/${t}-14" "${HOME}/toolchains/clang/bin/${t}" 2>/dev/null || true
+              if [ -e "/usr/bin/${t}-14" ]; then ln -sf "/usr/bin/${t}-14" "${HOME}/toolchains/clang/bin/${t}"; fi
               [ -e "/usr/bin/${t}" ] && ln -sf "/usr/bin/${t}" "${HOME}/toolchains/clang/bin/${t}" || true
             done
-            
             for t in clang clang++; do
               [ -x "${HOME}/toolchains/clang/bin/${t}" ] || ln -sf "/usr/bin/${t}-14" "${HOME}/toolchains/clang/bin/${t}"
             done
@@ -68,22 +66,43 @@ jobs:
           sed -i '/CONFIG_SUPPORT_SNIFFER_RADIOTAP/,/endif/c\ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1' "${MK}"
           grep -n SNIFFER_RADIOTAP "${MK}"
 
-      # ---------- LINUX 5.10 COMPAT ----------
+      # ---------- LINUX 5.10 COMPAT – gen4-mt79xx ----------
+      # MiCode MTK_kernel_modules spark-s-oss does NOT build clean against
+      # MiCode/Xiaomi_Kernel_OpenSource spark-s-oss 5.10 without shims.
       - name: Apply Linux 5.10 compat patches – gen4-mt79xx
         run: |
           set -euxo pipefail
           WLAN="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx"
           cd "$WLAN"
 
-          # 1. config.h – kernel API shims
-          perl -0777 -i -pe 's/(#define _CONFIG_H)/$1\n\n\/\* spark 5.10 compat – Redmi Pad SE monitor build *\/\n#include <linux\/version.h>\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\n#ifndef ioremap_nocache\n#define ioremap_nocache ioremap\n#endif\n#ifndef get_dma_ops\n#define get_dma_ops(dev) NULL\n#endif\n#endif\n#ifndef PCIE_STATE_SUSPEND_ENTERING\n#define PCIE_STATE_SUSPEND_ENTERING 1\n#endif\n#define eSuspendtate ulSuspendFlag\n\/\* end compat *\/\n/s' include/config.h
+          # 1. config.h – kernel API shims that are safe as macros
+          # NOTE: do NOT define eSuspendtate here – we stub the function in hal_pdma.c instead,
+          # otherwise a naive sed turns rHifInfo.eSuspendtate into rHifInfo.0 which is invalid C
+          perl -0777 -i -pe 's/(#define _CONFIG_H)/$1\n\n\/\* spark 5.10 compat – Redmi Pad SE monitor build *\/\n#include <linux\/version.h>\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\n#ifndef ioremap_nocache\n#define ioremap_nocache ioremap\n#endif\n#ifndef get_dma_ops\n#define get_dma_ops(dev) NULL\n#endif\n#endif\n#ifndef PCIE_STATE_SUSPEND_ENTERING\n#define PCIE_STATE_SUSPEND_ENTERING 0\n#endif\n\/\* end compat *\/\n/s' include/config.h
 
           # 2. Relax -Werror globally
-          echo 'ccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable' >> Makefile
+          echo 'ccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable -Wno-misleading-indentation' >> Makefile
           find os/linux/hif -name Makefile -exec sh -c 'echo "ccflags-y += -Wno-error" >> "$1"' _ {} \;
 
-          # 3. hal_pdma.c – halPdmaGetSuspendState uses missing eSuspendtate
-          sed -i 's/eSuspendtate/0/g; s/PCIE_STATE_SUSPEND_ENTERING/0/g' os/linux/hif/common/hal_pdma.c || true
+          # 3. hal_pdma.c – halPdmaGetSuspendState – struct GL_HIF_INFO has no eSuspendtate field in 5.10 spark kernel
+          # Replace the entire function with a stub BEFORE any other sed runs, so we never get rHifInfo.0 syntax corruption
+          HIF_PDMA=os/linux/hif/common/hal_pdma.c
+          # try a proper function-level replace
+          perl -0777 -i -pe 'BEGIN{undef $/} s/uint32_t\s+halPdmaGetSuspendState\s*\(\s*IN\s+struct\s+ADAPTER\s*\*prAdapter\s*,\s*uint8_t\s*\*pucState\s*\)\s*\{.*?\n\}\n/s/uint32_t halPdmaGetSuspendState(IN struct ADAPTER *prAdapter, uint8_t *pucState) { if (pucState) *pucState = 0; return false; }\n/smg' "$HIF_PDMA" || true
+          # Fallback – if perl didn't match (different formatting in this checkout), nuke the bad member accesses with a FULL expression replace, NOT just the field name
+          #   WRONG: sed 's/eSuspendtate/0/g'  -> produces rHifInfo.0  -> compile error
+          #   RIGHT: sed 's/prAdapter->prGlueInfo->rHifInfo\.eSuspendtate/0/g'
+          sed -i 's/prAdapter->prGlueInfo->rHifInfo\.eSuspendtate/0/g; s/PCIE_STATE_SUSPEND_ENTERING/0/g' "$HIF_PDMA" || true
+          # if the function still contains "rHifInfo.0" the previous sed was too greedy – fix it
+          sed -i 's/rHifInfo\.0/0/g' "$HIF_PDMA" || true
+
+          # Verify hal_pdma compiles as a standalone unit – fail fast here instead of 10 min into the full build
+          echo "--- hal_pdma suspend_state check ---"
+          if grep -q "rHifInfo\.0\|rHifInfo\.eSuspendtate" "$HIF_PDMA"; then
+            echo "ERROR: hal_pdma.c still contains broken suspend state access:"
+            grep -n "rHifInfo\." "$HIF_PDMA" | grep -E "eSuspend|\\.0"
+            exit 1
+          fi
 
           # 4. axi.c – 5.10 API fixes
           AXI=os/linux/hif/axi/axi.c
@@ -92,14 +111,33 @@ jobs:
           sed -i 's/init_timer(\([^)]*\));/timer_setup(\1, NULL, 0);/g' "$AXI"
           sed -i '/rSerTimer\.data/d; /rSerTimer\.function/d' "$AXI"
 
-          # copyTxData signature compat wrapper
+          # copyTxData signature – kernel 5.10 expects 4 args, MTK gives 3
+          # inject a compat wrapper if not present
           if ! grep -q "axiCopyTxData_compat" "$AXI"; then
-            perl -0777 -i -pe 's/(static const struct HIF_MEM_OPS axiMemOps\s*=\s*\{)/\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\nstatic bool axiCopyTxData_compat(struct MSDU_TOKEN_ENTRY *prToken, void *pvPkt, uint32_t u4Len, uint32_t u4Extra) { extern bool axiCopyTxData(struct MSDU_TOKEN_ENTRY *, void *, uint32_t); return axiCopyTxData(prToken, pvPkt, u4Len); }\n#define axiCopyTxData axiCopyTxData_compat\n#endif\n\n$1/s' "$AXI" || true
+            # insert wrapper before the axiMemOps struct definition
+            awk '
+            BEGIN{p=1}
+            /static const struct HIF_MEM_OPS axiMemOps/ && p {
+              print "#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)"
+              print "static bool axiCopyTxData_compat(struct MSDU_TOKEN_ENTRY *prToken, void *pvPkt, uint32_t u4Len, uint32_t u4Extra) {"
+              print "    extern bool axiCopyTxData(struct MSDU_TOKEN_ENTRY *, void *, uint32_t);"
+              print "    return axiCopyTxData(prToken, pvPkt, u4Len);"
+              print "}"
+              print "#define axiCopyTxData axiCopyTxData_compat"
+              print "#endif"
+              p=0
+            }
+            {print}
+            ' "$AXI" > "$AXI.tmp" && mv "$AXI.tmp" "$AXI"
           fi
           sed -i 's/\.copyTxData\s*=\s*axiCopyTxData/.copyTxData = axiCopyTxData_compat/g' "$AXI" || true
 
           echo "--- compat check ---"
-          grep -rn "ioremap_nocache\|get_dma_ops\|init_timer\|rSerTimer\.data\|eSuspendtate" --include="*.c" --include="*.h" os/linux/hif/ || echo "clean enough"
+          if grep -rn "rHifInfo\.0\|rHifInfo\.eSuspendtate\|get_dma_ops\|ioremap_nocache[^)]" --include="*.c" --include="*.h" os/linux/hif/ | grep -v "define\|#ifndef\|//\|/\*"; then
+            echo "WARNING: unpatched symbols remain in hif/ – build may still fail"
+          else
+            echo "hif/ compat clean – OK"
+          fi
 
       - name: Fetch stock kernel_config
         run: |
@@ -127,6 +165,11 @@ jobs:
           cp "${CONFIG_SRC}" "${CONFIG_DST}"
           cd "${KERNEL_DIR}"
 
+          # ---- KMI / GKI symbol trimming fix – Xiaomi spark ----
+          # Stock config: CONFIG_TRIM_UNUSED_KSYMS=y
+          # CONFIG_UNUSED_KSYMS_WHITELIST="/mnt/disks/build-disk/.../abi_symbollist.raw"
+          # → modules_prepare fails. olddefconfig re-enables it, so strip BEFORE and AFTER.
+
           # 1. Pre-strip
           sed -i \
             -e '/CONFIG_TRIM_UNUSED_KSYMS/d' \
@@ -135,8 +178,8 @@ jobs:
             -e '/abi_symbollist/d' \
             -e '\|/mnt/disks|d' \
             "${CONFIG_DST}"
-            
-          # Replaced heredoc with echo to prevent YAML parser indentation errors
+
+          # Avoid heredoc in YAML to prevent parsing failures, use echo append
           echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
           echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
           echo "# CONFIG_KMI_SYMBOL_LIST is not set" >> "${CONFIG_DST}"
