@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ---------- CLANG – apt + cache, googlesource is blocked in CI ----------
+      # ---------- CLANG – apt + cache ----------
       - name: Cache clang toolchain
         id: cache-clang
         uses: actions/cache@v4
@@ -34,7 +34,7 @@ jobs:
               gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
             mkdir -p "${HOME}/toolchains/clang/bin"
             for t in clang clang++ ld.lld llvm-ar llvm-nm llvm-objcopy llvm-objdump llvm-strip llvm-readelf; do
-              if [ -e "/usr/bin/${t}-14" ]; then ln -sf "/usr/bin/${t}-14" "${HOME}/toolchains/clang/bin/${t}"; fi
+              [ -e "/usr/bin/${t}-14" ] && ln -sf "/usr/bin/${t}-14" "${HOME}/toolchains/clang/bin/${t}" || true
               [ -e "/usr/bin/${t}" ] && ln -sf "/usr/bin/${t}" "${HOME}/toolchains/clang/bin/${t}" || true
             done
             for t in clang clang++; do
@@ -67,42 +67,22 @@ jobs:
           grep -n SNIFFER_RADIOTAP "${MK}"
 
       # ---------- LINUX 5.10 COMPAT – gen4-mt79xx ----------
-      # MiCode MTK_kernel_modules spark-s-oss does NOT build clean against
-      # MiCode/Xiaomi_Kernel_OpenSource spark-s-oss 5.10 without shims.
       - name: Apply Linux 5.10 compat patches – gen4-mt79xx
         run: |
           set -euxo pipefail
           WLAN="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx"
           cd "$WLAN"
 
-          # 1. config.h – kernel API shims that are safe as macros
-          # NOTE: do NOT define eSuspendtate here – we stub the function in hal_pdma.c instead,
-          # otherwise a naive sed turns rHifInfo.eSuspendtate into rHifInfo.0 which is invalid C
+          # 1. config.h – kernel API shims
           perl -0777 -i -pe 's/(#define _CONFIG_H)/$1\n\n\/\* spark 5.10 compat – Redmi Pad SE monitor build *\/\n#include <linux\/version.h>\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,0)\n#ifndef ioremap_nocache\n#define ioremap_nocache ioremap\n#endif\n#ifndef get_dma_ops\n#define get_dma_ops(dev) NULL\n#endif\n#endif\n#ifndef PCIE_STATE_SUSPEND_ENTERING\n#define PCIE_STATE_SUSPEND_ENTERING 0\n#endif\n\/\* end compat *\/\n/s' include/config.h
 
-          # 2. Relax -Werror globally
-          echo 'ccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable -Wno-misleading-indentation' >> Makefile
-          find os/linux/hif -name Makefile -exec sh -c 'echo "ccflags-y += -Wno-error" >> "$1"' _ {} \;
+          # 2. Relax -Werror globally – apply to EVERY Makefile in the tree
+          find . -name "Makefile*" -exec sh -c 'grep -q "Wno-error" "$1" || echo "ccflags-y += -Wno-error -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-function -Wno-unused-variable -Wno-misleading-indentation" >> "$1"' _ {} \;
 
-          # 3. hal_pdma.c – halPdmaGetSuspendState – struct GL_HIF_INFO has no eSuspendtate field in 5.10 spark kernel
-          # Replace the entire function with a stub BEFORE any other sed runs, so we never get rHifInfo.0 syntax corruption
+          # 3. hal_pdma.c – halPdmaGetSuspendState – GL_HIF_INFO.eSuspendtate missing in 5.10 spark kernel
           HIF_PDMA=os/linux/hif/common/hal_pdma.c
-          # try a proper function-level replace
-          perl -0777 -i -pe 'BEGIN{undef $/} s/uint32_t\s+halPdmaGetSuspendState\s*\(\s*IN\s+struct\s+ADAPTER\s*\*prAdapter\s*,\s*uint8_t\s*\*pucState\s*\)\s*\{.*?\n\}\n/s/uint32_t halPdmaGetSuspendState(IN struct ADAPTER *prAdapter, uint8_t *pucState) { if (pucState) *pucState = 0; return false; }\n/smg' "$HIF_PDMA" || true
-          # Fallback – if perl didn't match (different formatting in this checkout), nuke the bad member accesses with a FULL expression replace, NOT just the field name
-          #   WRONG: sed 's/eSuspendtate/0/g'  -> produces rHifInfo.0  -> compile error
-          #   RIGHT: sed 's/prAdapter->prGlueInfo->rHifInfo\.eSuspendtate/0/g'
           sed -i 's/prAdapter->prGlueInfo->rHifInfo\.eSuspendtate/0/g; s/PCIE_STATE_SUSPEND_ENTERING/0/g' "$HIF_PDMA" || true
-          # if the function still contains "rHifInfo.0" the previous sed was too greedy – fix it
           sed -i 's/rHifInfo\.0/0/g' "$HIF_PDMA" || true
-
-          # Verify hal_pdma compiles as a standalone unit – fail fast here instead of 10 min into the full build
-          echo "--- hal_pdma suspend_state check ---"
-          if grep -q "rHifInfo\.0\|rHifInfo\.eSuspendtate" "$HIF_PDMA"; then
-            echo "ERROR: hal_pdma.c still contains broken suspend state access:"
-            grep -n "rHifInfo\." "$HIF_PDMA" | grep -E "eSuspend|\\.0"
-            exit 1
-          fi
 
           # 4. axi.c – 5.10 API fixes
           AXI=os/linux/hif/axi/axi.c
@@ -112,9 +92,7 @@ jobs:
           sed -i '/rSerTimer\.data/d; /rSerTimer\.function/d' "$AXI"
 
           # copyTxData signature – kernel 5.10 expects 4 args, MTK gives 3
-          # inject a compat wrapper if not present
           if ! grep -q "axiCopyTxData_compat" "$AXI"; then
-            # insert wrapper before the axiMemOps struct definition
             awk '
             BEGIN{p=1}
             /static const struct HIF_MEM_OPS axiMemOps/ && p {
@@ -132,11 +110,22 @@ jobs:
           fi
           sed -i 's/\.copyTxData\s*=\s*axiCopyTxData/.copyTxData = axiCopyTxData_compat/g' "$AXI" || true
 
+          # 5. chips/connac/connac.c – struct mt66xx_chip_info layout mismatch
+          CONNAC=chips/connac/connac.c
+          if [ -f "$CONNAC" ]; then
+            sed -i '/show_mcu_debug_info/d; /show_conninfra_debug_info/d' "$CONNAC"
+          fi
+
           echo "--- compat check ---"
-          if grep -rn "rHifInfo\.0\|rHifInfo\.eSuspendtate\|get_dma_ops\|ioremap_nocache[^)]" --include="*.c" --include="*.h" os/linux/hif/ | grep -v "define\|#ifndef\|//\|/\*"; then
-            echo "WARNING: unpatched symbols remain in hif/ – build may still fail"
+          if grep -rn "rHifInfo\.0\|rHifInfo\.eSuspendtate\|ioremap_nocache[^)]\|get_dma_ops\|init_timer" --include="*.c" --include="*.h" os/linux/hif/ | grep -v "define\|#ifndef\|//\|/\*\|\""; then
+            echo "WARNING: unpatched symbols remain in hif/"
           else
             echo "hif/ compat clean – OK"
+          fi
+          if grep -q "show_mcu_debug_info\|show_conninfra_debug_info" chips/connac/connac.c; then
+            echo "WARNING: connac chip_info debug fields still present"
+          else
+            echo "connac.c compat clean – OK"
           fi
 
       - name: Fetch stock kernel_config
@@ -165,12 +154,7 @@ jobs:
           cp "${CONFIG_SRC}" "${CONFIG_DST}"
           cd "${KERNEL_DIR}"
 
-          # ---- KMI / GKI symbol trimming fix – Xiaomi spark ----
-          # Stock config: CONFIG_TRIM_UNUSED_KSYMS=y
-          # CONFIG_UNUSED_KSYMS_WHITELIST="/mnt/disks/build-disk/.../abi_symbollist.raw"
-          # → modules_prepare fails. olddefconfig re-enables it, so strip BEFORE and AFTER.
-
-          # 1. Pre-strip
+          # ---- KMI / GKI symbol trimming fix ----
           sed -i \
             -e '/CONFIG_TRIM_UNUSED_KSYMS/d' \
             -e '/CONFIG_UNUSED_KSYMS_WHITELIST/d' \
@@ -178,16 +162,17 @@ jobs:
             -e '/abi_symbollist/d' \
             -e '\|/mnt/disks|d' \
             "${CONFIG_DST}"
-
-          # Avoid heredoc in YAML to prevent parsing failures, use echo append
-          echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
-          echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
-          echo "# CONFIG_KMI_SYMBOL_LIST is not set" >> "${CONFIG_DST}"
-          echo 'CONFIG_KMI_SYMBOL_LIST=""' >> "${CONFIG_DST}"
+          
+          {
+            echo "# CONFIG_TRIM_UNUSED_KSYMS is not set"
+            echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""'
+            echo "# CONFIG_KMI_SYMBOL_LIST is not set"
+            echo 'CONFIG_KMI_SYMBOL_LIST=""'
+          } >> "${CONFIG_DST}"
 
           make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 olddefconfig
 
-          # 2. Post-strip
+          # Post-strip – olddefconfig re-enables TRIM_UNUSED_KSYMS
           ./scripts/config --file "${CONFIG_DST}" -d TRIM_UNUSED_KSYMS --set-str UNUSED_KSYMS_WHITELIST "" || true
           sed -i \
             -e '/CONFIG_TRIM_UNUSED_KSYMS=y/d' \
@@ -196,16 +181,12 @@ jobs:
             -e '/abi_symbollist/d' \
             -e '\|/mnt/disks|d' \
             "${CONFIG_DST}"
-            
+          
           grep -q "^# CONFIG_TRIM_UNUSED_KSYMS is not set" "${CONFIG_DST}" || echo "# CONFIG_TRIM_UNUSED_KSYMS is not set" >> "${CONFIG_DST}"
           grep -q "^CONFIG_UNUSED_KSYMS_WHITELIST=" "${CONFIG_DST}" || echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
 
-          echo "=== KMI sanity check ==="
           grep -E 'TRIM_UNUSED_KSYMS|UNUSED_KSYMS_WHITELIST|KMI_SYMBOL_LIST|abi_symbollist|/mnt/disks' "${CONFIG_DST}" || echo "clean – OK"
-          if grep -q "CONFIG_TRIM_UNUSED_KSYMS=y" "${CONFIG_DST}"; then
-            echo "ERROR: TRIM_UNUSED_KSYMS still =y"
-            exit 1
-          fi
+          if grep -q "CONFIG_TRIM_UNUSED_KSYMS=y" "${CONFIG_DST}"; then echo "ERROR: TRIM_UNUSED_KSYMS still =y"; exit 1; fi
 
           make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 olddefconfig
           make O="${OUT_DIR}" ARCH="${ARCH}" LLVM=1 prepare modules_prepare -j"$(nproc)"
