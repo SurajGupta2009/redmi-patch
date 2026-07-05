@@ -1,0 +1,16 @@
+--- a/connectivity/wlan/core/gen4-mt79xx/Makefile
++++ b/connectivity/wlan/core/gen4-mt79xx/Makefile
+@@
+-ifeq ($(CONFIG_SUPPORT_SNIFFER_RADIOTAP), y)
+-    ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1
+-    ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1
+-else
+-    ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=0
+-    ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=0
+-endif
++# Redmi Pad SE 8.7 4G spark monitor-mode research build
++# Force MediaTek radiotap monitor-mode support into wlan_drv_gen4m.ko.
++# Stock spark module is built without this, so iw list lacks * monitor
++# and no radiotap/monitor netdev is exposed.
++ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1
++ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1

@@ -1,0 +1,21 @@
+#!/system/bin/sh
+# Magisk module install hooks
+# Print a friendly warning so the user knows what they are installing.
+ui_print "============================================"
+ui_print " Redmi Pad SE 8.7 4G (spark) WiFi Monitor "
+ui_print "============================================"
+ui_print ""
+ui_print "This module overlays a patched wlan_drv_gen4m.ko"
+ui_print "with radiotap monitor-mode support."
+ui_print ""
+ui_print "If Wi-Fi fails to load after reboot:"
+ui_print "  su"
+ui_print "  rm -rf /data/adb/modules/redmi-wifi-monitor-spark"
+ui_print "  reboot"
+ui_print ""
+ui_print "After reboot, verify with:"
+ui_print "  su"
+ui_print "  iw list | grep -A30 'Supported interface modes'"
+ui_print "  # expect: * monitor"
+ui_print ""
+ui_print "Authorized security testing on owned networks only."

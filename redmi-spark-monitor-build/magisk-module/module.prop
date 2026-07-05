@@ -1,0 +1,6 @@
+id=redmi-wifi-monitor-spark
+name=Redmi Spark Built-in WiFi Monitor Mode (RX)
+version=0.1.0
+versionCode=1
+author=local
+description=Overrides /vendor/lib/modules/wlan_drv_gen4m.ko with a radiotap-monitor-enabled research build for authorized lab use.
