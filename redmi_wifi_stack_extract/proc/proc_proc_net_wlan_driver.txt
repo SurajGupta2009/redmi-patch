@@ -1,0 +1,1 @@
+cat: /proc/net/wlan/driver: I/O error

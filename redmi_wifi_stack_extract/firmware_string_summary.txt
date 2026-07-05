@@ -1,0 +1,1619 @@
+=== FIRMWARE STRINGS ===
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/BT_FW.cfg ---
+coex_opp_time_ratio_wifi_slot: 0x00
+coex_lescan_time_ratio_wifi_slot: 0x00
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/WIFI_RAM_CODE_soc1_0_1a_1.bin ---
+C=ARB debug:: arb_cr_val [0x%x]
+ARB debug:: Reset TX Queue -Stop Queue [0x%x][0x%x]
+ARB debug:: Reset TX Queue -Start Queue [0x%x][0x%x]
+[TX] halDumpTXDebug Band 0 
+BBCCA Debug: 
+Dump ARB Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump AGG Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump DMA Debug Flag CR ...... %d, %d, %d 
+Dump TMAC Debug Flag CR ...... %d, %d, %d 
+halDumpDubegTMAC_DEBUG_FLAG ...... %d 
+halDumpDubegTMAC_DEBUG_FLAG End...... %d 
+../wifi/base/soc1_0/ram/hal/phy/cal/hal_cal_manu.c
+=========== PDMA%d debug probe ===========
+../wifi/core/middle/common/wh_pm.c
+../wifi/core/middle/common/wh_coex.c
+../wifi/core/middle/common/wh_hif.c
+../wifi/core/middle/common/wh_tx.c
+../wifi/core/middle/common/wh_fbm.c
+../wifi/core/middle/talos/wh_cap_talos.c
+../wifi/core/middle/talos/wh_sys_talos.c
+[5566]CheckBMPtoNotifyWifi: NTF_BMP:0x%x
+WIFI LISR handler
+../wifi/open_corebase/core/system/wsys_init.c
+WIFI_REGISTER_ASSERT_DUMP_HANDLER
+wifi_normal_operation_entry
+../wifi/open_corebase/core/system/wsys_isr.c
+../wifi/open_corebase/core/system/wsys_isr_handler.c
+# Found buffered packet in QID %d
+../wifi/open_corebase/core/system/wsys_mem.c
+../wifi/open_corebase/core/system/wsys_timer.c
+../wifi/open_corebase/core/system/wsys_init_fsm.c
+Wifi ASSERT @ %s:%u
+../wifi/custom/system/wsys_dbg.c
+../wifi/custom/system/wsys_cfg_chip.c
+ucCtrlFlagAssertPath %d , ucCtrlFlagDebugLevel%d 
+switch off Assert PATH from WIFI
+switch on Assert PATH to WIFI
+arSetDebug
+../wifi/custom/system/wsys_sw_ctrl.c
+../wifi/custom/system/wsys_mbox.c
+../wifi/custom/system/wsys_cmd.c
+TXM: (Warning) EVENT packet alloc failed 
+../wifi/open_corebase/core/wificore/mlm/bss_cfg.c
+HostBssUpdate1 Index:%x,Conn:%x,%x,SSIDLen:%x,QBSS:%x,Rate:%x,%x,IdxOfAP:%x 
+BSSInfo[0x%x] Connect DevInfo[0x%x] 
+Aging NULL transmitted OK, keep connection
+../wifi/open_corebase/core/wificore/mlm/bss_null.c
+../wifi/open_corebase/core/wificore/mlm/bss_sap_beacon.c
+------<mqmUpdateWMMParamForDebug>--Bss[%u], Ac[%u]--T[%u], A[%u] Cmax[%u], Cmin[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u],  curL[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u], key[%u], Val[%u]
+../wifi/core/wificore/mlm/mqm_cmm.c
+../wifi/core/wificore/mlm/mqm_ba.c
+MQM: (Warning) EVENT packet alloc failed 
+mqmBAHandleDisconnectionEvent
+../wifi/core/wificore/mlm/txm_cmm.c
+TXM: Enter txmSendPackets()
+TXM: Enter txmSendHifPackets()
+HIF Tx packet with invalid PID[%u]
+TXM: (Warning) Invalid packet type (Drop Pkt)
+TXM: Enter txmHandleDisconnectionEvent()
+txmSendHifPackets
+txmHifPacketSanityCheck
+../wifi/core/wificore/mlm/txq.c
+txmHasBufferedBmcPackets found BMC pkts %u
+TXM: Flush packet to DEFER, FID[%u]
+TXM: Flush "%u" packets to DEFER
+TXM: Flush packet to DROP, FID[%u]
+TXM: Flush "%u" packets to DROP
+IDC:after:puWifiOperCHLow:%d,puWifiOperCHHigh:%d
+COEX:ConnectProtectEn, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:ConnectProtectDis, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:%d:[U:A:AP:PS:CONN:PRO:DBDC:Rate][%d,%d,%d,%d,%d,%d,%d,%d]
+COEX:LTE_WD=%d,WIFI_WD=%d
+COEX:<RW><TDD>[ContiWiFiTime:%d ms]
+coexMonitor DbdcIdx:%d CurrentState:%d NextState:%d fgRWAbnormal:%d RwEn:%d
+coexMonitorTimeout DbdcIdx:%d fgRWAbnormal:%d CurState:%d RW=%d, RWEn=%d
+coexMonitorTimeout DbdcIdx:%d RW abnormal!! CurT:%d LastRWRec:%d LastIntExitRW:%d
+coexSetWifiAlwaysScan: %s, %s,(%d); %d, %x
+../wifi/core/wificore/mlm/coex_common_pta3.c
+COEX:coexUpdateBssLteWiFiOpMd: eDbdcIdx(%d) >= RAM_BAND_NUM
+Conn
+coexMonitorBTRwSteps
+coexRwMonitorTimeout
+Set Wifi Pwr:Max=%d,Min=%d.
+../wifi/core/wificore/mlm/coex_lte_pta3.c
+COEX: Send LTE SafeCh to Host : event packet alloc fauil.
+coexInjectCmd WiFi Tx Pwr back-off :on->off 
+coexInjectCmd WiFi Tx Pwr back-off :off->on 
+WiFi Tx Pwr back-off :no change 
+../wifi/open_corebase/core/wificore/mlm/coex_bt.c
+prStaRec->aucRxMcsBitmask[%d]= 0x%x
+McsSet %x RxMcs[0] %x.%x.%x VhtMcs %x Oper %x HtCap %x VhtCap %x bw %u RxSgi %x.%x.%x.%x
+../wifi/open_corebase/core/wificore/mlm/sta_rec.c
+u2VhtRxMcsMap:%x
+STARec %d, ConnectionState %d, Type 0x%x
+RXM: Enter staRecGetStaRecByTA()
+RXM: Enter rxmProcessBeaconFrame()
+rxmDefragMPDU
+../wifi/core/wificore/mlm/rxm.c
+RXM: Enter rxmIsDuplicateFrame()
+RXM: SC=0x%X (BA Entry present)
+RXM: (Warning) Unkown QoS Data with TID=%d
+RXM: SC= 0x%X (Cache[%d] updated)
+RXM: SC= 0x%X (Cache[%d] duplicate)
+RXM: Enter rxmProcessVendorSpecificAction()
+RXM: Enter rxmProcessActionFrame()
+rxmProcessActionFrame: ucCategory %x, ucAction %x
+RXM: Enter rxmHandleMgmtFrame()
+RXM: (Warning) MMPDU handler not found FC_SUBTYPE=%d 
+RXM: Enter rxmHandleCtrlFrame()
+RXM: (Warning) NULL Frame (Drop Pkt) 
+RXM: (Warning) Format Error? (Drop Pkt) 
+RXM: (Warning) MIC Verified Fail (Drop Pkt)
+RXM: DropReasonInSuspnedMode:BC%d, MC%d, PktDrop%d
+RXM: Enter rxmHandleDataFrame()
+RXM: (Warning) A Data frame with wrong state or w/o staRec (Drop Pkt) SN %d
+RXM: (Warning) Duplicate (Drop Pkt) SN %d
+RXM frag flow prSwRfb == NULL
+RXM: (Warning) A Control frame with NULL STA_REC (Drop Pkt)
+RXM: (Warning) Unknown frame type (Drop Pkt) 
+rxmHandleMacRxDone
+rxmInit
+rxmDequeueRxDonePacket
+RXM: (Warning) BssIndex %d Rx MC Filter invalid control setting %d
+Sniffer Mode Band%d %d
+../wifi/core/wificore/mlm/rxm_cmm.c
+RXM: Before u4RxFilter = 0x%x
+RXM: Enable promiscuous mode
+RXM: Disable promiscuous mode
+RXM: Enable all-multicast mode
+RXM: Enable multicast mode
+RXM: Disable multicast mode
+RXM: Enable Broadcast mode
+RXM: Disable Broadcast mode
+RXM: After u4RxFilter = 0x%x
+RXM: (Warning) rxmCmdMcastAddress invalid BssIndex, return
+RXM: Write u4NumOfGroupAddr=%d
+RXM: (Warning) rxmSeekAndSetMcastEntry return FALSE
+RXM: Enter rxmBufferPacket()
+RXM: Enter rxmIndicateMMPDUToHost()
+../wifi/open_corebase/core/wificore/mlm/wpa.c
+WPA: Truncated EAPOL-Key packet: key_data_length=%lu > extra_len=%lu
+WPA: EAPOL-Key Replay Counter did not increase - dropping packet
+WPA: Invalid EAPOL-Key MIC - dropping packet
+WPA: Could not verify EAPOL-Key MIC - dropping packet
+../wifi/core/wificore/mlm/cnm.c
+../wifi/core/wificore/mlm/cnm_radio.c
+../wifi/open_corebase/core/wificore/mlm/privacy.c
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->u2VhtRxMcsMap=%x
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->aucRxMcsBitmask[0][1][2][3]=[%x][%x][%x][%x]
+RxMcs_0
+RxMcs_1
+RxMcs_2
+RxMcs_3
+RxMcs_4
+VhtRxMcs
+../wifi/core/wificore/rlm/ra_wrapper_mobile.c
+raIndicateStaDisconnected
+../wifi/core/wificore/rlm/rlm.c
+../wifi/core/wificore/rlm/rlm_phy.c
+BFEventPfmuPnReadToWifiHifWrapper Failed: u4Status=%d
+BFEventPfmuDataReadToWifiHifWrapper Failed
+BFEventPfmuTagReadToWifiHifWrapper Failed
+%s : Wifi-spectrum is enable !!
+%s: WifiSpectrumCtrl FuncIndex = %d
+wifiSpectrumExtCmdHandler
+../wifi/open_corebase/core/wificore/rlm/domain.c
+../wifi/core/wificore/rlm/txpwr.c
+TEST: u4PacketIntervalUs=%ld, u2RandomNumForAC=0x%04x
+../wifi/open_corebase/core/wificore/rlm/rlm_test.c
+Packet Length = %d 
+End capture Radar, starting dump.... 
+Attributes of TX Packets:
+Tx PacketCnt is 0!
+../wifi/open_corebase/core/wificore/wsm/pwr_ctrl.c
+Keep full power (i=%d, P2P is connected)
+Keep full power (i=%d, connected idle)
+../wifi/open_corebase/core/wificore/wsm/rate.c
+antSwapDecideIfDisabled Not satisfied with only one AIS connection->Disabled 
+../wifi/custom/feature/pm_sap.c
+../wifi/custom/feature/linkdt_sap.c
+../wifi/custom/feature/suspend_mode.c
+../wifi/custom/feature/pm_cmm.c
+pmCmmCmdIndicateBssConnected: Invalid length (%d : %d)
+pmCmmCmdIndicateBssConnected (ucBssIndex=%d)
+pmCmmCmdIndicateBssConnected
+pmCmmInitOnConnect
+[hemChipCfg]prPmProfSetupInfo->u2ActModeSwIntv_Conn = %d
+../wifi/custom/feature/pm_sta.c
+->pmStaOnConnectDeferredTimeout(): %08x %08x
+[Fast PS] BSS[%u] Skip check due to KeepActiveOnConnect is TRUE
+**  (ucBssIndex:%d, eConnectionState:%d, eCurrentOPMode:%d, eBssAvailState:%d)
+pmStaOnConnectDeferredTimeout
+../wifi/custom/feature/scan.c
+../wifi/custom/feature/scan_fsm.c
+BSS[%u] is inctive or disconnect, skip config.
+bypass check, due to Connection Diagnosis already started!!
+Try to send NULL for Connection Diagnosis, BSS[%u]
+Connection Quality is OK, keep connection! NULL SN[%u],txS[%u]
+Connection Quality is poor! txS[%u] NULL SN[%u] round[%u,%u] !
+linkDtStaRunEventDiagnosisOfConn(), retry:%u 
+BEACON_TIMEOUT_DUE_2_CONNECTION_FAIL
+RMo Not yet ready for RSSI monitor due to no bcn rate updated
+RMo rssiMonitorMonitorRssiAndIndicateToHif: Warning!! EVENT packet allocation failure!
+rssiMonitorUtSetMaxMin
+rssiMonitorTimeout
+rssiMonitorCmdProcRssiMonitor
+../wifi/custom/feature/wfc_keep_alive.c
+KEEP_ALIVE: Keep Alive Timeout...Send Packet to Server[%d]
+../wifi/custom/feature/stats.c
+TDLS: (Warning) EVENT packet alloc failed 
+../wifi/custom/feature/tdls.c
+RXM:TDLS_HOST_EVENT_TD_PTI_TIMEOUT 22  
+../wifi/custom/feature/pm_p2p.c
+../wifi/custom/feature/pm_trap.c
+../wifi/custom/feature/p2p.c
+pktDropCmdSetDropPacketCfg IPV4[%08x] IPV6[%08x] SNAP[%08x]
+../wifi/custom/feature/arp_ns.c
+../wifi/custom/feature/rrm_action.c
+../wifi/custom/feature/rrm_quiet.c
+../wifi/custom/feature/rrm_voe.c
+DisconnectTimeAIS
+DisconnectTimeP2P
+DisconnectTimeBT
+DropPacketsIPV4Low
+DropPacketsIPV4High
+DropPacketsIPV6Low
+DropPacketsIPV6High
+DropPacketsSNAPLow
+DropPacketsSNAPHigh
+setDropPacketCfg
+rxm_ut
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/WMT_SOC.cfg ---
+bt_tssi_from_wifi=3
+wifi_ant_swap_mode=0
+wifi_main_ant_polarity=0
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/fm_cust.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/fs1801.fsm ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt1151_default_firmware2.img ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6785v96.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6785v99.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v9c.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6785.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6877.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6885.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_gt9885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6785a4.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6785ae.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6877af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885a1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885b0.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885b1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/lib3a.ccu ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/mt6631_fm_v1_coeff.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/mt6631_fm_v1_patch.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/remoteproc_scp ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/sipa.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_patch_mcu_1a_1_hdr.bin ---
+%s:arg0=%d,idc_wifi_always_scan=%d
+ram_cb-%d(WF_CB_WIFI_BT_PTA_CTRL):0x%x,0x%x,0x%x
+Patch__wmt_wifi_coex_ram_callback
+Patch__wmt_indicate_connsys_def_param
+../patch/sys_patch_wifi.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_ram_bt_1a_1_hdr.bin ---
+../bluetooth/system/debug/sys_log_interface_emi.c
+MTK CONNAC #1
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_ram_mcu_1a_1_hdr.bin ---
+system/transport/hcit_mtk_uart.c
+[FDB] target is not in debug state
+[FDB] target is already in debug state
+system/tracer/debug_probe/debug_probe.c
+Debug probe handler
+CONNSYS TOP ISR
+Monitor Duration: %d unit = %d ms (unit 30.52us)
+WIFI
+WIFI Q
+;;[CONNSYS]core dump start ..
+Reset Chip packet num is not sync before coredump start %d %d Chip state:%d 
+;[WDT timeout] CONN2AP
+GET HOST PACKET = 0x%x
+EMIFWLOGU
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/txpowerctrl.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_ram_wifi_1a_1_hdr.bin ---
+../wifi/base/soc1_0/emi/wifi_pwr_on_seq_soc1_0.c
+../wifi/base/soc1_0/hal/hal_mu.c
+../wifi/base/soc1_0/hal/hal_wf_cfg.c
+../wifi/base/soc1_0/emi/hal_cal_flow_rom.c
+CAL: end of Wifi ROM calibration: %d
+../wifi/base/soc1_0/emi/hal_cal_manu_rom.c
+BT_TSSI_from_WiFi_TaskHandler CAL: Antenna Idx[%d]
+../wifi/base/soc1_0/emi/hal_phy_rom.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/wifi.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware_listing.txt ---
+-rw-r--r--  1 root root  639696 2009-01-01 05:30 WIFI_RAM_CODE_soc1_0_1a_1.bin
+-rw-r--r--  1 root root  197588 2009-01-01 05:30 soc1_0_ram_wifi_1a_1_hdr.bin
+-rw-r--r--  1 root root     132 2009-01-01 05:30 wifi.cfg
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/BT_FW.cfg ---
+coex_opp_time_ratio_wifi_slot: 0x00
+coex_lescan_time_ratio_wifi_slot: 0x00
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/WIFI_RAM_CODE_soc1_0_1a_1.bin ---
+C=ARB debug:: arb_cr_val [0x%x]
+ARB debug:: Reset TX Queue -Stop Queue [0x%x][0x%x]
+ARB debug:: Reset TX Queue -Start Queue [0x%x][0x%x]
+[TX] halDumpTXDebug Band 0 
+BBCCA Debug: 
+Dump ARB Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump AGG Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump DMA Debug Flag CR ...... %d, %d, %d 
+Dump TMAC Debug Flag CR ...... %d, %d, %d 
+halDumpDubegTMAC_DEBUG_FLAG ...... %d 
+halDumpDubegTMAC_DEBUG_FLAG End...... %d 
+../wifi/base/soc1_0/ram/hal/phy/cal/hal_cal_manu.c
+=========== PDMA%d debug probe ===========
+../wifi/core/middle/common/wh_pm.c
+../wifi/core/middle/common/wh_coex.c
+../wifi/core/middle/common/wh_hif.c
+../wifi/core/middle/common/wh_tx.c
+../wifi/core/middle/common/wh_fbm.c
+../wifi/core/middle/talos/wh_cap_talos.c
+../wifi/core/middle/talos/wh_sys_talos.c
+[5566]CheckBMPtoNotifyWifi: NTF_BMP:0x%x
+WIFI LISR handler
+../wifi/open_corebase/core/system/wsys_init.c
+WIFI_REGISTER_ASSERT_DUMP_HANDLER
+wifi_normal_operation_entry
+../wifi/open_corebase/core/system/wsys_isr.c
+../wifi/open_corebase/core/system/wsys_isr_handler.c
+# Found buffered packet in QID %d
+../wifi/open_corebase/core/system/wsys_mem.c
+../wifi/open_corebase/core/system/wsys_timer.c
+../wifi/open_corebase/core/system/wsys_init_fsm.c
+Wifi ASSERT @ %s:%u
+../wifi/custom/system/wsys_dbg.c
+../wifi/custom/system/wsys_cfg_chip.c
+ucCtrlFlagAssertPath %d , ucCtrlFlagDebugLevel%d 
+switch off Assert PATH from WIFI
+switch on Assert PATH to WIFI
+arSetDebug
+../wifi/custom/system/wsys_sw_ctrl.c
+../wifi/custom/system/wsys_mbox.c
+../wifi/custom/system/wsys_cmd.c
+TXM: (Warning) EVENT packet alloc failed 
+../wifi/open_corebase/core/wificore/mlm/bss_cfg.c
+HostBssUpdate1 Index:%x,Conn:%x,%x,SSIDLen:%x,QBSS:%x,Rate:%x,%x,IdxOfAP:%x 
+BSSInfo[0x%x] Connect DevInfo[0x%x] 
+Aging NULL transmitted OK, keep connection
+../wifi/open_corebase/core/wificore/mlm/bss_null.c
+../wifi/open_corebase/core/wificore/mlm/bss_sap_beacon.c
+------<mqmUpdateWMMParamForDebug>--Bss[%u], Ac[%u]--T[%u], A[%u] Cmax[%u], Cmin[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u],  curL[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u], key[%u], Val[%u]
+../wifi/core/wificore/mlm/mqm_cmm.c
+../wifi/core/wificore/mlm/mqm_ba.c
+MQM: (Warning) EVENT packet alloc failed 
+mqmBAHandleDisconnectionEvent
+../wifi/core/wificore/mlm/txm_cmm.c
+TXM: Enter txmSendPackets()
+TXM: Enter txmSendHifPackets()
+HIF Tx packet with invalid PID[%u]
+TXM: (Warning) Invalid packet type (Drop Pkt)
+TXM: Enter txmHandleDisconnectionEvent()
+txmSendHifPackets
+txmHifPacketSanityCheck
+../wifi/core/wificore/mlm/txq.c
+txmHasBufferedBmcPackets found BMC pkts %u
+TXM: Flush packet to DEFER, FID[%u]
+TXM: Flush "%u" packets to DEFER
+TXM: Flush packet to DROP, FID[%u]
+TXM: Flush "%u" packets to DROP
+IDC:after:puWifiOperCHLow:%d,puWifiOperCHHigh:%d
+COEX:ConnectProtectEn, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:ConnectProtectDis, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:%d:[U:A:AP:PS:CONN:PRO:DBDC:Rate][%d,%d,%d,%d,%d,%d,%d,%d]
+COEX:LTE_WD=%d,WIFI_WD=%d
+COEX:<RW><TDD>[ContiWiFiTime:%d ms]
+coexMonitor DbdcIdx:%d CurrentState:%d NextState:%d fgRWAbnormal:%d RwEn:%d
+coexMonitorTimeout DbdcIdx:%d fgRWAbnormal:%d CurState:%d RW=%d, RWEn=%d
+coexMonitorTimeout DbdcIdx:%d RW abnormal!! CurT:%d LastRWRec:%d LastIntExitRW:%d
+coexSetWifiAlwaysScan: %s, %s,(%d); %d, %x
+../wifi/core/wificore/mlm/coex_common_pta3.c
+COEX:coexUpdateBssLteWiFiOpMd: eDbdcIdx(%d) >= RAM_BAND_NUM
+Conn
+coexMonitorBTRwSteps
+coexRwMonitorTimeout
+Set Wifi Pwr:Max=%d,Min=%d.
+../wifi/core/wificore/mlm/coex_lte_pta3.c
+COEX: Send LTE SafeCh to Host : event packet alloc fauil.
+coexInjectCmd WiFi Tx Pwr back-off :on->off 
+coexInjectCmd WiFi Tx Pwr back-off :off->on 
+WiFi Tx Pwr back-off :no change 
+../wifi/open_corebase/core/wificore/mlm/coex_bt.c
+prStaRec->aucRxMcsBitmask[%d]= 0x%x
+McsSet %x RxMcs[0] %x.%x.%x VhtMcs %x Oper %x HtCap %x VhtCap %x bw %u RxSgi %x.%x.%x.%x
+../wifi/open_corebase/core/wificore/mlm/sta_rec.c
+u2VhtRxMcsMap:%x
+STARec %d, ConnectionState %d, Type 0x%x
+RXM: Enter staRecGetStaRecByTA()
+RXM: Enter rxmProcessBeaconFrame()
+rxmDefragMPDU
+../wifi/core/wificore/mlm/rxm.c
+RXM: Enter rxmIsDuplicateFrame()
+RXM: SC=0x%X (BA Entry present)
+RXM: (Warning) Unkown QoS Data with TID=%d
+RXM: SC= 0x%X (Cache[%d] updated)
+RXM: SC= 0x%X (Cache[%d] duplicate)
+RXM: Enter rxmProcessVendorSpecificAction()
+RXM: Enter rxmProcessActionFrame()
+rxmProcessActionFrame: ucCategory %x, ucAction %x
+RXM: Enter rxmHandleMgmtFrame()
+RXM: (Warning) MMPDU handler not found FC_SUBTYPE=%d 
+RXM: Enter rxmHandleCtrlFrame()
+RXM: (Warning) NULL Frame (Drop Pkt) 
+RXM: (Warning) Format Error? (Drop Pkt) 
+RXM: (Warning) MIC Verified Fail (Drop Pkt)
+RXM: DropReasonInSuspnedMode:BC%d, MC%d, PktDrop%d
+RXM: Enter rxmHandleDataFrame()
+RXM: (Warning) A Data frame with wrong state or w/o staRec (Drop Pkt) SN %d
+RXM: (Warning) Duplicate (Drop Pkt) SN %d
+RXM frag flow prSwRfb == NULL
+RXM: (Warning) A Control frame with NULL STA_REC (Drop Pkt)
+RXM: (Warning) Unknown frame type (Drop Pkt) 
+rxmHandleMacRxDone
+rxmInit
+rxmDequeueRxDonePacket
+RXM: (Warning) BssIndex %d Rx MC Filter invalid control setting %d
+Sniffer Mode Band%d %d
+../wifi/core/wificore/mlm/rxm_cmm.c
+RXM: Before u4RxFilter = 0x%x
+RXM: Enable promiscuous mode
+RXM: Disable promiscuous mode
+RXM: Enable all-multicast mode
+RXM: Enable multicast mode
+RXM: Disable multicast mode
+RXM: Enable Broadcast mode
+RXM: Disable Broadcast mode
+RXM: After u4RxFilter = 0x%x
+RXM: (Warning) rxmCmdMcastAddress invalid BssIndex, return
+RXM: Write u4NumOfGroupAddr=%d
+RXM: (Warning) rxmSeekAndSetMcastEntry return FALSE
+RXM: Enter rxmBufferPacket()
+RXM: Enter rxmIndicateMMPDUToHost()
+../wifi/open_corebase/core/wificore/mlm/wpa.c
+WPA: Truncated EAPOL-Key packet: key_data_length=%lu > extra_len=%lu
+WPA: EAPOL-Key Replay Counter did not increase - dropping packet
+WPA: Invalid EAPOL-Key MIC - dropping packet
+WPA: Could not verify EAPOL-Key MIC - dropping packet
+../wifi/core/wificore/mlm/cnm.c
+../wifi/core/wificore/mlm/cnm_radio.c
+../wifi/open_corebase/core/wificore/mlm/privacy.c
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->u2VhtRxMcsMap=%x
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->aucRxMcsBitmask[0][1][2][3]=[%x][%x][%x][%x]
+RxMcs_0
+RxMcs_1
+RxMcs_2
+RxMcs_3
+RxMcs_4
+VhtRxMcs
+../wifi/core/wificore/rlm/ra_wrapper_mobile.c
+raIndicateStaDisconnected
+../wifi/core/wificore/rlm/rlm.c
+../wifi/core/wificore/rlm/rlm_phy.c
+BFEventPfmuPnReadToWifiHifWrapper Failed: u4Status=%d
+BFEventPfmuDataReadToWifiHifWrapper Failed
+BFEventPfmuTagReadToWifiHifWrapper Failed
+%s : Wifi-spectrum is enable !!
+%s: WifiSpectrumCtrl FuncIndex = %d
+wifiSpectrumExtCmdHandler
+../wifi/open_corebase/core/wificore/rlm/domain.c
+../wifi/core/wificore/rlm/txpwr.c
+TEST: u4PacketIntervalUs=%ld, u2RandomNumForAC=0x%04x
+../wifi/open_corebase/core/wificore/rlm/rlm_test.c
+Packet Length = %d 
+End capture Radar, starting dump.... 
+Attributes of TX Packets:
+Tx PacketCnt is 0!
+../wifi/open_corebase/core/wificore/wsm/pwr_ctrl.c
+Keep full power (i=%d, P2P is connected)
+Keep full power (i=%d, connected idle)
+../wifi/open_corebase/core/wificore/wsm/rate.c
+antSwapDecideIfDisabled Not satisfied with only one AIS connection->Disabled 
+../wifi/custom/feature/pm_sap.c
+../wifi/custom/feature/linkdt_sap.c
+../wifi/custom/feature/suspend_mode.c
+../wifi/custom/feature/pm_cmm.c
+pmCmmCmdIndicateBssConnected: Invalid length (%d : %d)
+pmCmmCmdIndicateBssConnected (ucBssIndex=%d)
+pmCmmCmdIndicateBssConnected
+pmCmmInitOnConnect
+[hemChipCfg]prPmProfSetupInfo->u2ActModeSwIntv_Conn = %d
+../wifi/custom/feature/pm_sta.c
+->pmStaOnConnectDeferredTimeout(): %08x %08x
+[Fast PS] BSS[%u] Skip check due to KeepActiveOnConnect is TRUE
+**  (ucBssIndex:%d, eConnectionState:%d, eCurrentOPMode:%d, eBssAvailState:%d)
+pmStaOnConnectDeferredTimeout
+../wifi/custom/feature/scan.c
+../wifi/custom/feature/scan_fsm.c
+BSS[%u] is inctive or disconnect, skip config.
+bypass check, due to Connection Diagnosis already started!!
+Try to send NULL for Connection Diagnosis, BSS[%u]
+Connection Quality is OK, keep connection! NULL SN[%u],txS[%u]
+Connection Quality is poor! txS[%u] NULL SN[%u] round[%u,%u] !
+linkDtStaRunEventDiagnosisOfConn(), retry:%u 
+BEACON_TIMEOUT_DUE_2_CONNECTION_FAIL
+RMo Not yet ready for RSSI monitor due to no bcn rate updated
+RMo rssiMonitorMonitorRssiAndIndicateToHif: Warning!! EVENT packet allocation failure!
+rssiMonitorUtSetMaxMin
+rssiMonitorTimeout
+rssiMonitorCmdProcRssiMonitor
+../wifi/custom/feature/wfc_keep_alive.c
+KEEP_ALIVE: Keep Alive Timeout...Send Packet to Server[%d]
+../wifi/custom/feature/stats.c
+TDLS: (Warning) EVENT packet alloc failed 
+../wifi/custom/feature/tdls.c
+RXM:TDLS_HOST_EVENT_TD_PTI_TIMEOUT 22  
+../wifi/custom/feature/pm_p2p.c
+../wifi/custom/feature/pm_trap.c
+../wifi/custom/feature/p2p.c
+pktDropCmdSetDropPacketCfg IPV4[%08x] IPV6[%08x] SNAP[%08x]
+../wifi/custom/feature/arp_ns.c
+../wifi/custom/feature/rrm_action.c
+../wifi/custom/feature/rrm_quiet.c
+../wifi/custom/feature/rrm_voe.c
+DisconnectTimeAIS
+DisconnectTimeP2P
+DisconnectTimeBT
+DropPacketsIPV4Low
+DropPacketsIPV4High
+DropPacketsIPV6Low
+DropPacketsIPV6High
+DropPacketsSNAPLow
+DropPacketsSNAPHigh
+setDropPacketCfg
+rxm_ut
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/WMT_SOC.cfg ---
+bt_tssi_from_wifi=3
+wifi_ant_swap_mode=0
+wifi_main_ant_polarity=0
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/cts_ts_fw_hkc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/cts_ts_fw_hkc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/cts_ts_fw_hkc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/fm_cust.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/fs1801.fsm ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt1151_default_firmware2.img ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6785v96.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6785v99.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6885v9c.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_90hz6785.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_90hz6877.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_90hz6885.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_gt9885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6785a4.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6785ae.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6877af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885a1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885b0.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885b1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/lib3a.ccu ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/mt6631_fm_v1_coeff.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/mt6631_fm_v1_patch.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/remoteproc_scp ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/sipa.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_patch_mcu_1a_1_hdr.bin ---
+%s:arg0=%d,idc_wifi_always_scan=%d
+ram_cb-%d(WF_CB_WIFI_BT_PTA_CTRL):0x%x,0x%x,0x%x
+Patch__wmt_wifi_coex_ram_callback
+Patch__wmt_indicate_connsys_def_param
+../patch/sys_patch_wifi.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_ram_bt_1a_1_hdr.bin ---
+../bluetooth/system/debug/sys_log_interface_emi.c
+MTK CONNAC #1
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_ram_mcu_1a_1_hdr.bin ---
+system/transport/hcit_mtk_uart.c
+[FDB] target is not in debug state
+[FDB] target is already in debug state
+system/tracer/debug_probe/debug_probe.c
+Debug probe handler
+CONNSYS TOP ISR
+Monitor Duration: %d unit = %d ms (unit 30.52us)
+WIFI
+WIFI Q
+;;[CONNSYS]core dump start ..
+Reset Chip packet num is not sync before coredump start %d %d Chip state:%d 
+;[WDT timeout] CONN2AP
+GET HOST PACKET = 0x%x
+EMIFWLOGU
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/txpowerctrl.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_ram_wifi_1a_1_hdr.bin ---
+../wifi/base/soc1_0/emi/wifi_pwr_on_seq_soc1_0.c
+../wifi/base/soc1_0/hal/hal_mu.c
+../wifi/base/soc1_0/hal/hal_wf_cfg.c
+../wifi/base/soc1_0/emi/hal_cal_flow_rom.c
+CAL: end of Wifi ROM calibration: %d
+../wifi/base/soc1_0/emi/hal_cal_manu_rom.c
+BT_TSSI_from_WiFi_TaskHandler CAL: Antenna Idx[%d]
+../wifi/base/soc1_0/emi/hal_phy_rom.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/wifi.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware_listing.txt ---
+-rw-r--r--  1 root root  639696 2009-01-01 05:30 WIFI_RAM_CODE_soc1_0_1a_1.bin
+-rw-r--r--  1 root root  197588 2009-01-01 05:30 soc1_0_ram_wifi_1a_1_hdr.bin
+-rw-r--r--  1 root root     132 2009-01-01 05:30 wifi.cfg
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_string_summary.txt ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/BT_FW.cfg ---
+coex_opp_time_ratio_wifi_slot: 0x00
+coex_lescan_time_ratio_wifi_slot: 0x00
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/WIFI_RAM_CODE_soc1_0_1a_1.bin ---
+C=ARB debug:: arb_cr_val [0x%x]
+ARB debug:: Reset TX Queue -Stop Queue [0x%x][0x%x]
+ARB debug:: Reset TX Queue -Start Queue [0x%x][0x%x]
+[TX] halDumpTXDebug Band 0 
+BBCCA Debug: 
+Dump ARB Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump AGG Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump DMA Debug Flag CR ...... %d, %d, %d 
+Dump TMAC Debug Flag CR ...... %d, %d, %d 
+halDumpDubegTMAC_DEBUG_FLAG ...... %d 
+halDumpDubegTMAC_DEBUG_FLAG End...... %d 
+../wifi/base/soc1_0/ram/hal/phy/cal/hal_cal_manu.c
+=========== PDMA%d debug probe ===========
+../wifi/core/middle/common/wh_pm.c
+../wifi/core/middle/common/wh_coex.c
+../wifi/core/middle/common/wh_hif.c
+../wifi/core/middle/common/wh_tx.c
+../wifi/core/middle/common/wh_fbm.c
+../wifi/core/middle/talos/wh_cap_talos.c
+../wifi/core/middle/talos/wh_sys_talos.c
+[5566]CheckBMPtoNotifyWifi: NTF_BMP:0x%x
+WIFI LISR handler
+../wifi/open_corebase/core/system/wsys_init.c
+WIFI_REGISTER_ASSERT_DUMP_HANDLER
+wifi_normal_operation_entry
+../wifi/open_corebase/core/system/wsys_isr.c
+../wifi/open_corebase/core/system/wsys_isr_handler.c
+# Found buffered packet in QID %d
+../wifi/open_corebase/core/system/wsys_mem.c
+../wifi/open_corebase/core/system/wsys_timer.c
+../wifi/open_corebase/core/system/wsys_init_fsm.c
+Wifi ASSERT @ %s:%u
+../wifi/custom/system/wsys_dbg.c
+../wifi/custom/system/wsys_cfg_chip.c
+ucCtrlFlagAssertPath %d , ucCtrlFlagDebugLevel%d 
+switch off Assert PATH from WIFI
+switch on Assert PATH to WIFI
+arSetDebug
+../wifi/custom/system/wsys_sw_ctrl.c
+../wifi/custom/system/wsys_mbox.c
+../wifi/custom/system/wsys_cmd.c
+TXM: (Warning) EVENT packet alloc failed 
+../wifi/open_corebase/core/wificore/mlm/bss_cfg.c
+HostBssUpdate1 Index:%x,Conn:%x,%x,SSIDLen:%x,QBSS:%x,Rate:%x,%x,IdxOfAP:%x 
+BSSInfo[0x%x] Connect DevInfo[0x%x] 
+Aging NULL transmitted OK, keep connection
+../wifi/open_corebase/core/wificore/mlm/bss_null.c
+../wifi/open_corebase/core/wificore/mlm/bss_sap_beacon.c
+------<mqmUpdateWMMParamForDebug>--Bss[%u], Ac[%u]--T[%u], A[%u] Cmax[%u], Cmin[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u],  curL[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u], key[%u], Val[%u]
+../wifi/core/wificore/mlm/mqm_cmm.c
+../wifi/core/wificore/mlm/mqm_ba.c
+MQM: (Warning) EVENT packet alloc failed 
+mqmBAHandleDisconnectionEvent
+../wifi/core/wificore/mlm/txm_cmm.c
+TXM: Enter txmSendPackets()
+TXM: Enter txmSendHifPackets()
+HIF Tx packet with invalid PID[%u]
+TXM: (Warning) Invalid packet type (Drop Pkt)
+TXM: Enter txmHandleDisconnectionEvent()
+txmSendHifPackets
+txmHifPacketSanityCheck
+../wifi/core/wificore/mlm/txq.c
+txmHasBufferedBmcPackets found BMC pkts %u
+TXM: Flush packet to DEFER, FID[%u]
+TXM: Flush "%u" packets to DEFER
+TXM: Flush packet to DROP, FID[%u]
+TXM: Flush "%u" packets to DROP
+IDC:after:puWifiOperCHLow:%d,puWifiOperCHHigh:%d
+COEX:ConnectProtectEn, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:ConnectProtectDis, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:%d:[U:A:AP:PS:CONN:PRO:DBDC:Rate][%d,%d,%d,%d,%d,%d,%d,%d]
+COEX:LTE_WD=%d,WIFI_WD=%d
+COEX:<RW><TDD>[ContiWiFiTime:%d ms]
+coexMonitor DbdcIdx:%d CurrentState:%d NextState:%d fgRWAbnormal:%d RwEn:%d
+coexMonitorTimeout DbdcIdx:%d fgRWAbnormal:%d CurState:%d RW=%d, RWEn=%d
+coexMonitorTimeout DbdcIdx:%d RW abnormal!! CurT:%d LastRWRec:%d LastIntExitRW:%d
+coexSetWifiAlwaysScan: %s, %s,(%d); %d, %x
+../wifi/core/wificore/mlm/coex_common_pta3.c
+COEX:coexUpdateBssLteWiFiOpMd: eDbdcIdx(%d) >= RAM_BAND_NUM
+Conn
+coexMonitorBTRwSteps
+coexRwMonitorTimeout
+Set Wifi Pwr:Max=%d,Min=%d.
+../wifi/core/wificore/mlm/coex_lte_pta3.c
+COEX: Send LTE SafeCh to Host : event packet alloc fauil.
+coexInjectCmd WiFi Tx Pwr back-off :on->off 
+coexInjectCmd WiFi Tx Pwr back-off :off->on 
+WiFi Tx Pwr back-off :no change 
+../wifi/open_corebase/core/wificore/mlm/coex_bt.c
+prStaRec->aucRxMcsBitmask[%d]= 0x%x
+McsSet %x RxMcs[0] %x.%x.%x VhtMcs %x Oper %x HtCap %x VhtCap %x bw %u RxSgi %x.%x.%x.%x
+../wifi/open_corebase/core/wificore/mlm/sta_rec.c
+u2VhtRxMcsMap:%x
+STARec %d, ConnectionState %d, Type 0x%x
+RXM: Enter staRecGetStaRecByTA()
+RXM: Enter rxmProcessBeaconFrame()
+rxmDefragMPDU
+../wifi/core/wificore/mlm/rxm.c
+RXM: Enter rxmIsDuplicateFrame()
+RXM: SC=0x%X (BA Entry present)
+RXM: (Warning) Unkown QoS Data with TID=%d
+RXM: SC= 0x%X (Cache[%d] updated)
+RXM: SC= 0x%X (Cache[%d] duplicate)
+RXM: Enter rxmProcessVendorSpecificAction()
+RXM: Enter rxmProcessActionFrame()
+rxmProcessActionFrame: ucCategory %x, ucAction %x
+RXM: Enter rxmHandleMgmtFrame()
+RXM: (Warning) MMPDU handler not found FC_SUBTYPE=%d 
+RXM: Enter rxmHandleCtrlFrame()
+RXM: (Warning) NULL Frame (Drop Pkt) 
+RXM: (Warning) Format Error? (Drop Pkt) 
+RXM: (Warning) MIC Verified Fail (Drop Pkt)
+RXM: DropReasonInSuspnedMode:BC%d, MC%d, PktDrop%d
+RXM: Enter rxmHandleDataFrame()
+RXM: (Warning) A Data frame with wrong state or w/o staRec (Drop Pkt) SN %d
+RXM: (Warning) Duplicate (Drop Pkt) SN %d
+RXM frag flow prSwRfb == NULL
+RXM: (Warning) A Control frame with NULL STA_REC (Drop Pkt)
+RXM: (Warning) Unknown frame type (Drop Pkt) 
+rxmHandleMacRxDone
+rxmInit
+rxmDequeueRxDonePacket
+RXM: (Warning) BssIndex %d Rx MC Filter invalid control setting %d
+Sniffer Mode Band%d %d
+../wifi/core/wificore/mlm/rxm_cmm.c
+RXM: Before u4RxFilter = 0x%x
+RXM: Enable promiscuous mode
+RXM: Disable promiscuous mode
+RXM: Enable all-multicast mode
+RXM: Enable multicast mode
+RXM: Disable multicast mode
+RXM: Enable Broadcast mode
+RXM: Disable Broadcast mode
+RXM: After u4RxFilter = 0x%x
+RXM: (Warning) rxmCmdMcastAddress invalid BssIndex, return
+RXM: Write u4NumOfGroupAddr=%d
+RXM: (Warning) rxmSeekAndSetMcastEntry return FALSE
+RXM: Enter rxmBufferPacket()
+RXM: Enter rxmIndicateMMPDUToHost()
+../wifi/open_corebase/core/wificore/mlm/wpa.c
+WPA: Truncated EAPOL-Key packet: key_data_length=%lu > extra_len=%lu
+WPA: EAPOL-Key Replay Counter did not increase - dropping packet
+WPA: Invalid EAPOL-Key MIC - dropping packet
+WPA: Could not verify EAPOL-Key MIC - dropping packet
+../wifi/core/wificore/mlm/cnm.c
+../wifi/core/wificore/mlm/cnm_radio.c
+../wifi/open_corebase/core/wificore/mlm/privacy.c
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->u2VhtRxMcsMap=%x
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->aucRxMcsBitmask[0][1][2][3]=[%x][%x][%x][%x]
+RxMcs_0
+RxMcs_1
+RxMcs_2
+RxMcs_3
+RxMcs_4
+VhtRxMcs
+../wifi/core/wificore/rlm/ra_wrapper_mobile.c
+raIndicateStaDisconnected
+../wifi/core/wificore/rlm/rlm.c
+../wifi/core/wificore/rlm/rlm_phy.c
+BFEventPfmuPnReadToWifiHifWrapper Failed: u4Status=%d
+BFEventPfmuDataReadToWifiHifWrapper Failed
+BFEventPfmuTagReadToWifiHifWrapper Failed
+%s : Wifi-spectrum is enable !!
+%s: WifiSpectrumCtrl FuncIndex = %d
+wifiSpectrumExtCmdHandler
+../wifi/open_corebase/core/wificore/rlm/domain.c
+../wifi/core/wificore/rlm/txpwr.c
+TEST: u4PacketIntervalUs=%ld, u2RandomNumForAC=0x%04x
+../wifi/open_corebase/core/wificore/rlm/rlm_test.c
+Packet Length = %d 
+End capture Radar, starting dump.... 
+Attributes of TX Packets:
+Tx PacketCnt is 0!
+../wifi/open_corebase/core/wificore/wsm/pwr_ctrl.c
+Keep full power (i=%d, P2P is connected)
+Keep full power (i=%d, connected idle)
+../wifi/open_corebase/core/wificore/wsm/rate.c
+antSwapDecideIfDisabled Not satisfied with only one AIS connection->Disabled 
+../wifi/custom/feature/pm_sap.c
+../wifi/custom/feature/linkdt_sap.c
+../wifi/custom/feature/suspend_mode.c
+../wifi/custom/feature/pm_cmm.c
+pmCmmCmdIndicateBssConnected: Invalid length (%d : %d)
+pmCmmCmdIndicateBssConnected (ucBssIndex=%d)
+pmCmmCmdIndicateBssConnected
+pmCmmInitOnConnect
+[hemChipCfg]prPmProfSetupInfo->u2ActModeSwIntv_Conn = %d
+../wifi/custom/feature/pm_sta.c
+->pmStaOnConnectDeferredTimeout(): %08x %08x
+[Fast PS] BSS[%u] Skip check due to KeepActiveOnConnect is TRUE
+**  (ucBssIndex:%d, eConnectionState:%d, eCurrentOPMode:%d, eBssAvailState:%d)
+pmStaOnConnectDeferredTimeout
+../wifi/custom/feature/scan.c
+../wifi/custom/feature/scan_fsm.c
+BSS[%u] is inctive or disconnect, skip config.
+bypass check, due to Connection Diagnosis already started!!
+Try to send NULL for Connection Diagnosis, BSS[%u]
+Connection Quality is OK, keep connection! NULL SN[%u],txS[%u]
+Connection Quality is poor! txS[%u] NULL SN[%u] round[%u,%u] !
+linkDtStaRunEventDiagnosisOfConn(), retry:%u 
+BEACON_TIMEOUT_DUE_2_CONNECTION_FAIL
+RMo Not yet ready for RSSI monitor due to no bcn rate updated
+RMo rssiMonitorMonitorRssiAndIndicateToHif: Warning!! EVENT packet allocation failure!
+rssiMonitorUtSetMaxMin
+rssiMonitorTimeout
+rssiMonitorCmdProcRssiMonitor
+../wifi/custom/feature/wfc_keep_alive.c
+KEEP_ALIVE: Keep Alive Timeout...Send Packet to Server[%d]
+../wifi/custom/feature/stats.c
+TDLS: (Warning) EVENT packet alloc failed 
+../wifi/custom/feature/tdls.c
+RXM:TDLS_HOST_EVENT_TD_PTI_TIMEOUT 22  
+../wifi/custom/feature/pm_p2p.c
+../wifi/custom/feature/pm_trap.c
+../wifi/custom/feature/p2p.c
+pktDropCmdSetDropPacketCfg IPV4[%08x] IPV6[%08x] SNAP[%08x]
+../wifi/custom/feature/arp_ns.c
+../wifi/custom/feature/rrm_action.c
+../wifi/custom/feature/rrm_quiet.c
+../wifi/custom/feature/rrm_voe.c
+DisconnectTimeAIS
+DisconnectTimeP2P
+DisconnectTimeBT
+DropPacketsIPV4Low
+DropPacketsIPV4High
+DropPacketsIPV6Low
+DropPacketsIPV6High
+DropPacketsSNAPLow
+DropPacketsSNAPHigh
+setDropPacketCfg
+rxm_ut
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/WMT_SOC.cfg ---
+bt_tssi_from_wifi=3
+wifi_ant_swap_mode=0
+wifi_main_ant_polarity=0
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/fm_cust.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/fs1801.fsm ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt1151_default_firmware2.img ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6785v96.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6785v99.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v9c.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6785.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6877.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6885.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_gt9885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6785a4.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6785ae.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6877af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885a1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885b0.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885b1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/lib3a.ccu ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/mt6631_fm_v1_coeff.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/mt6631_fm_v1_patch.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/remoteproc_scp ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/sipa.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_patch_mcu_1a_1_hdr.bin ---
+%s:arg0=%d,idc_wifi_always_scan=%d
+ram_cb-%d(WF_CB_WIFI_BT_PTA_CTRL):0x%x,0x%x,0x%x
+Patch__wmt_wifi_coex_ram_callback
+Patch__wmt_indicate_connsys_def_param
+../patch/sys_patch_wifi.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_ram_bt_1a_1_hdr.bin ---
+../bluetooth/system/debug/sys_log_interface_emi.c
+MTK CONNAC #1
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_ram_mcu_1a_1_hdr.bin ---
+system/transport/hcit_mtk_uart.c
+[FDB] target is not in debug state
+[FDB] target is already in debug state
+system/tracer/debug_probe/debug_probe.c
+Debug probe handler
+CONNSYS TOP ISR
+Monitor Duration: %d unit = %d ms (unit 30.52us)
+WIFI
+WIFI Q
+;;[CONNSYS]core dump start ..
+Reset Chip packet num is not sync before coredump start %d %d Chip state:%d 
+;[WDT timeout] CONN2AP
+GET HOST PACKET = 0x%x
+EMIFWLOGU
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/txpowerctrl.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_ram_wifi_1a_1_hdr.bin ---
+../wifi/base/soc1_0/emi/wifi_pwr_on_seq_soc1_0.c
+../wifi/base/soc1_0/hal/hal_mu.c
+../wifi/base/soc1_0/hal/hal_wf_cfg.c
+../wifi/base/soc1_0/emi/hal_cal_flow_rom.c
+CAL: end of Wifi ROM calibration: %d
+../wifi/base/soc1_0/emi/hal_cal_manu_rom.c
+BT_TSSI_from_WiFi_TaskHandler CAL: Antenna Idx[%d]
+../wifi/base/soc1_0/emi/hal_phy_rom.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/wifi.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware_listing.txt ---
+-rw-r--r--  1 root root  639696 2009-01-01 05:30 WIFI_RAM_CODE_soc1_0_1a_1.bin
+-rw-r--r--  1 root root  197588 2009-01-01 05:30 soc1_0_ram_wifi_1a_1_hdr.bin
+-rw-r--r--  1 root root     132 2009-01-01 05:30 wifi.cfg
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/BT_FW.cfg ---
+coex_opp_time_ratio_wifi_slot: 0x00
+coex_lescan_time_ratio_wifi_slot: 0x00
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/WIFI_RAM_CODE_soc1_0_1a_1.bin ---
+C=ARB debug:: arb_cr_val [0x%x]
+ARB debug:: Reset TX Queue -Stop Queue [0x%x][0x%x]
+ARB debug:: Reset TX Queue -Start Queue [0x%x][0x%x]
+[TX] halDumpTXDebug Band 0 
+BBCCA Debug: 
+Dump ARB Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump AGG Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump DMA Debug Flag CR ...... %d, %d, %d 
+Dump TMAC Debug Flag CR ...... %d, %d, %d 
+halDumpDubegTMAC_DEBUG_FLAG ...... %d 
+halDumpDubegTMAC_DEBUG_FLAG End...... %d 
+../wifi/base/soc1_0/ram/hal/phy/cal/hal_cal_manu.c
+=========== PDMA%d debug probe ===========
+../wifi/core/middle/common/wh_pm.c
+../wifi/core/middle/common/wh_coex.c
+../wifi/core/middle/common/wh_hif.c
+../wifi/core/middle/common/wh_tx.c
+../wifi/core/middle/common/wh_fbm.c
+../wifi/core/middle/talos/wh_cap_talos.c
+../wifi/core/middle/talos/wh_sys_talos.c
+[5566]CheckBMPtoNotifyWifi: NTF_BMP:0x%x
+WIFI LISR handler
+../wifi/open_corebase/core/system/wsys_init.c
+WIFI_REGISTER_ASSERT_DUMP_HANDLER
+wifi_normal_operation_entry
+../wifi/open_corebase/core/system/wsys_isr.c
+../wifi/open_corebase/core/system/wsys_isr_handler.c
+# Found buffered packet in QID %d
+../wifi/open_corebase/core/system/wsys_mem.c
+../wifi/open_corebase/core/system/wsys_timer.c
+../wifi/open_corebase/core/system/wsys_init_fsm.c
+Wifi ASSERT @ %s:%u
+../wifi/custom/system/wsys_dbg.c
+../wifi/custom/system/wsys_cfg_chip.c
+ucCtrlFlagAssertPath %d , ucCtrlFlagDebugLevel%d 
+switch off Assert PATH from WIFI
+switch on Assert PATH to WIFI
+arSetDebug
+../wifi/custom/system/wsys_sw_ctrl.c
+../wifi/custom/system/wsys_mbox.c
+../wifi/custom/system/wsys_cmd.c
+TXM: (Warning) EVENT packet alloc failed 
+../wifi/open_corebase/core/wificore/mlm/bss_cfg.c
+HostBssUpdate1 Index:%x,Conn:%x,%x,SSIDLen:%x,QBSS:%x,Rate:%x,%x,IdxOfAP:%x 
+BSSInfo[0x%x] Connect DevInfo[0x%x] 
+Aging NULL transmitted OK, keep connection
+../wifi/open_corebase/core/wificore/mlm/bss_null.c
+../wifi/open_corebase/core/wificore/mlm/bss_sap_beacon.c
+------<mqmUpdateWMMParamForDebug>--Bss[%u], Ac[%u]--T[%u], A[%u] Cmax[%u], Cmin[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u],  curL[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u], key[%u], Val[%u]
+../wifi/core/wificore/mlm/mqm_cmm.c
+../wifi/core/wificore/mlm/mqm_ba.c
+MQM: (Warning) EVENT packet alloc failed 
+mqmBAHandleDisconnectionEvent
+../wifi/core/wificore/mlm/txm_cmm.c
+TXM: Enter txmSendPackets()
+TXM: Enter txmSendHifPackets()
+HIF Tx packet with invalid PID[%u]
+TXM: (Warning) Invalid packet type (Drop Pkt)
+TXM: Enter txmHandleDisconnectionEvent()
+txmSendHifPackets
+txmHifPacketSanityCheck
+../wifi/core/wificore/mlm/txq.c
+txmHasBufferedBmcPackets found BMC pkts %u
+TXM: Flush packet to DEFER, FID[%u]
+TXM: Flush "%u" packets to DEFER
+TXM: Flush packet to DROP, FID[%u]
+TXM: Flush "%u" packets to DROP
+IDC:after:puWifiOperCHLow:%d,puWifiOperCHHigh:%d
+COEX:ConnectProtectEn, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:ConnectProtectDis, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:%d:[U:A:AP:PS:CONN:PRO:DBDC:Rate][%d,%d,%d,%d,%d,%d,%d,%d]
+COEX:LTE_WD=%d,WIFI_WD=%d
+COEX:<RW><TDD>[ContiWiFiTime:%d ms]
+coexMonitor DbdcIdx:%d CurrentState:%d NextState:%d fgRWAbnormal:%d RwEn:%d
+coexMonitorTimeout DbdcIdx:%d fgRWAbnormal:%d CurState:%d RW=%d, RWEn=%d
+coexMonitorTimeout DbdcIdx:%d RW abnormal!! CurT:%d LastRWRec:%d LastIntExitRW:%d
+coexSetWifiAlwaysScan: %s, %s,(%d); %d, %x
+../wifi/core/wificore/mlm/coex_common_pta3.c
+COEX:coexUpdateBssLteWiFiOpMd: eDbdcIdx(%d) >= RAM_BAND_NUM
+Conn
+coexMonitorBTRwSteps
+coexRwMonitorTimeout
+Set Wifi Pwr:Max=%d,Min=%d.
+../wifi/core/wificore/mlm/coex_lte_pta3.c
+COEX: Send LTE SafeCh to Host : event packet alloc fauil.
+coexInjectCmd WiFi Tx Pwr back-off :on->off 
+coexInjectCmd WiFi Tx Pwr back-off :off->on 
+WiFi Tx Pwr back-off :no change 
+../wifi/open_corebase/core/wificore/mlm/coex_bt.c
+prStaRec->aucRxMcsBitmask[%d]= 0x%x
+McsSet %x RxMcs[0] %x.%x.%x VhtMcs %x Oper %x HtCap %x VhtCap %x bw %u RxSgi %x.%x.%x.%x
+../wifi/open_corebase/core/wificore/mlm/sta_rec.c
+u2VhtRxMcsMap:%x
+STARec %d, ConnectionState %d, Type 0x%x
+RXM: Enter staRecGetStaRecByTA()
+RXM: Enter rxmProcessBeaconFrame()
+rxmDefragMPDU
+../wifi/core/wificore/mlm/rxm.c
+RXM: Enter rxmIsDuplicateFrame()
+RXM: SC=0x%X (BA Entry present)
+RXM: (Warning) Unkown QoS Data with TID=%d
+RXM: SC= 0x%X (Cache[%d] updated)
+RXM: SC= 0x%X (Cache[%d] duplicate)
+RXM: Enter rxmProcessVendorSpecificAction()
+RXM: Enter rxmProcessActionFrame()
+rxmProcessActionFrame: ucCategory %x, ucAction %x
+RXM: Enter rxmHandleMgmtFrame()
+RXM: (Warning) MMPDU handler not found FC_SUBTYPE=%d 
+RXM: Enter rxmHandleCtrlFrame()
+RXM: (Warning) NULL Frame (Drop Pkt) 
+RXM: (Warning) Format Error? (Drop Pkt) 
+RXM: (Warning) MIC Verified Fail (Drop Pkt)
+RXM: DropReasonInSuspnedMode:BC%d, MC%d, PktDrop%d
+RXM: Enter rxmHandleDataFrame()
+RXM: (Warning) A Data frame with wrong state or w/o staRec (Drop Pkt) SN %d
+RXM: (Warning) Duplicate (Drop Pkt) SN %d
+RXM frag flow prSwRfb == NULL
+RXM: (Warning) A Control frame with NULL STA_REC (Drop Pkt)
+RXM: (Warning) Unknown frame type (Drop Pkt) 
+rxmHandleMacRxDone
+rxmInit
+rxmDequeueRxDonePacket
+RXM: (Warning) BssIndex %d Rx MC Filter invalid control setting %d
+Sniffer Mode Band%d %d
+../wifi/core/wificore/mlm/rxm_cmm.c
+RXM: Before u4RxFilter = 0x%x
+RXM: Enable promiscuous mode
+RXM: Disable promiscuous mode
+RXM: Enable all-multicast mode
+RXM: Enable multicast mode
+RXM: Disable multicast mode
+RXM: Enable Broadcast mode
+RXM: Disable Broadcast mode
+RXM: After u4RxFilter = 0x%x
+RXM: (Warning) rxmCmdMcastAddress invalid BssIndex, return
+RXM: Write u4NumOfGroupAddr=%d
+RXM: (Warning) rxmSeekAndSetMcastEntry return FALSE
+RXM: Enter rxmBufferPacket()
+RXM: Enter rxmIndicateMMPDUToHost()
+../wifi/open_corebase/core/wificore/mlm/wpa.c
+WPA: Truncated EAPOL-Key packet: key_data_length=%lu > extra_len=%lu
+WPA: EAPOL-Key Replay Counter did not increase - dropping packet
+WPA: Invalid EAPOL-Key MIC - dropping packet
+WPA: Could not verify EAPOL-Key MIC - dropping packet
+../wifi/core/wificore/mlm/cnm.c
+../wifi/core/wificore/mlm/cnm_radio.c
+../wifi/open_corebase/core/wificore/mlm/privacy.c
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->u2VhtRxMcsMap=%x
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->aucRxMcsBitmask[0][1][2][3]=[%x][%x][%x][%x]
+RxMcs_0
+RxMcs_1
+RxMcs_2
+RxMcs_3
+RxMcs_4
+VhtRxMcs
+../wifi/core/wificore/rlm/ra_wrapper_mobile.c
+raIndicateStaDisconnected
+../wifi/core/wificore/rlm/rlm.c
+../wifi/core/wificore/rlm/rlm_phy.c
+BFEventPfmuPnReadToWifiHifWrapper Failed: u4Status=%d
+BFEventPfmuDataReadToWifiHifWrapper Failed
+BFEventPfmuTagReadToWifiHifWrapper Failed
+%s : Wifi-spectrum is enable !!
+%s: WifiSpectrumCtrl FuncIndex = %d
+wifiSpectrumExtCmdHandler
+../wifi/open_corebase/core/wificore/rlm/domain.c
+../wifi/core/wificore/rlm/txpwr.c
+TEST: u4PacketIntervalUs=%ld, u2RandomNumForAC=0x%04x
+../wifi/open_corebase/core/wificore/rlm/rlm_test.c
+Packet Length = %d 
+End capture Radar, starting dump.... 
+Attributes of TX Packets:
+Tx PacketCnt is 0!
+../wifi/open_corebase/core/wificore/wsm/pwr_ctrl.c
+Keep full power (i=%d, P2P is connected)
+Keep full power (i=%d, connected idle)
+../wifi/open_corebase/core/wificore/wsm/rate.c
+antSwapDecideIfDisabled Not satisfied with only one AIS connection->Disabled 
+../wifi/custom/feature/pm_sap.c
+../wifi/custom/feature/linkdt_sap.c
+../wifi/custom/feature/suspend_mode.c
+../wifi/custom/feature/pm_cmm.c
+pmCmmCmdIndicateBssConnected: Invalid length (%d : %d)
+pmCmmCmdIndicateBssConnected (ucBssIndex=%d)
+pmCmmCmdIndicateBssConnected
+pmCmmInitOnConnect
+[hemChipCfg]prPmProfSetupInfo->u2ActModeSwIntv_Conn = %d
+../wifi/custom/feature/pm_sta.c
+->pmStaOnConnectDeferredTimeout(): %08x %08x
+[Fast PS] BSS[%u] Skip check due to KeepActiveOnConnect is TRUE
+**  (ucBssIndex:%d, eConnectionState:%d, eCurrentOPMode:%d, eBssAvailState:%d)
+pmStaOnConnectDeferredTimeout
+../wifi/custom/feature/scan.c
+../wifi/custom/feature/scan_fsm.c
+BSS[%u] is inctive or disconnect, skip config.
+bypass check, due to Connection Diagnosis already started!!
+Try to send NULL for Connection Diagnosis, BSS[%u]
+Connection Quality is OK, keep connection! NULL SN[%u],txS[%u]
+Connection Quality is poor! txS[%u] NULL SN[%u] round[%u,%u] !
+linkDtStaRunEventDiagnosisOfConn(), retry:%u 
+BEACON_TIMEOUT_DUE_2_CONNECTION_FAIL
+RMo Not yet ready for RSSI monitor due to no bcn rate updated
+RMo rssiMonitorMonitorRssiAndIndicateToHif: Warning!! EVENT packet allocation failure!
+rssiMonitorUtSetMaxMin
+rssiMonitorTimeout
+rssiMonitorCmdProcRssiMonitor
+../wifi/custom/feature/wfc_keep_alive.c
+KEEP_ALIVE: Keep Alive Timeout...Send Packet to Server[%d]
+../wifi/custom/feature/stats.c
+TDLS: (Warning) EVENT packet alloc failed 
+../wifi/custom/feature/tdls.c
+RXM:TDLS_HOST_EVENT_TD_PTI_TIMEOUT 22  
+../wifi/custom/feature/pm_p2p.c
+../wifi/custom/feature/pm_trap.c
+../wifi/custom/feature/p2p.c
+pktDropCmdSetDropPacketCfg IPV4[%08x] IPV6[%08x] SNAP[%08x]
+../wifi/custom/feature/arp_ns.c
+../wifi/custom/feature/rrm_action.c
+../wifi/custom/feature/rrm_quiet.c
+../wifi/custom/feature/rrm_voe.c
+DisconnectTimeAIS
+DisconnectTimeP2P
+DisconnectTimeBT
+DropPacketsIPV4Low
+DropPacketsIPV4High
+DropPacketsIPV6Low
+DropPacketsIPV6High
+DropPacketsSNAPLow
+DropPacketsSNAPHigh
+setDropPacketCfg
+rxm_ut
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/WMT_SOC.cfg ---
+bt_tssi_from_wifi=3
+wifi_ant_swap_mode=0
+wifi_main_ant_polarity=0
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/cts_ts_fw_hkc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/cts_ts_fw_hkc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/cts_ts_fw_hkc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/fm_cust.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/fs1801.fsm ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt1151_default_firmware2.img ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6785v96.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6785v99.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6885v9c.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_90hz6785.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_90hz6877.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_90hz6885.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_cfg_gt9885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6785a4.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6785ae.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6877af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885a1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885b0.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885b1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/gt9886_firmware_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/lib3a.ccu ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/mt6631_fm_v1_coeff.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/mt6631_fm_v1_patch.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_mp_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/novatek_ts_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/remoteproc_scp ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/sipa.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_patch_mcu_1a_1_hdr.bin ---
+%s:arg0=%d,idc_wifi_always_scan=%d
+ram_cb-%d(WF_CB_WIFI_BT_PTA_CTRL):0x%x,0x%x,0x%x
+Patch__wmt_wifi_coex_ram_callback
+Patch__wmt_indicate_connsys_def_param
+../patch/sys_patch_wifi.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_ram_bt_1a_1_hdr.bin ---
+../bluetooth/system/debug/sys_log_interface_emi.c
+MTK CONNAC #1
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_ram_mcu_1a_1_hdr.bin ---
+system/transport/hcit_mtk_uart.c
+[FDB] target is not in debug state
+[FDB] target is already in debug state
+system/tracer/debug_probe/debug_probe.c
+Debug probe handler
+CONNSYS TOP ISR
+Monitor Duration: %d unit = %d ms (unit 30.52us)
+WIFI
+WIFI Q
+;;[CONNSYS]core dump start ..
+Reset Chip packet num is not sync before coredump start %d %d Chip state:%d 
+;[WDT timeout] CONN2AP
+GET HOST PACKET = 0x%x
+EMIFWLOGU
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/txpowerctrl.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/soc1_0_ram_wifi_1a_1_hdr.bin ---
+../wifi/base/soc1_0/emi/wifi_pwr_on_seq_soc1_0.c
+../wifi/base/soc1_0/hal/hal_mu.c
+../wifi/base/soc1_0/hal/hal_wf_cfg.c
+../wifi/base/soc1_0/emi/hal_cal_flow_rom.c
+CAL: end of Wifi ROM calibration: %d
+../wifi/base/soc1_0/emi/hal_cal_manu_rom.c
+BT_TSSI_from_WiFi_TaskHandler CAL: Antenna Idx[%d]
+../wifi/base/soc1_0/emi/hal_phy_rom.c
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware/wifi.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_system_vendor_firmware_listing.txt ---
+-rw-r--r--  1 root root  639696 2009-01-01 05:30 WIFI_RAM_CODE_soc1_0_1a_1.bin
+-rw-r--r--  1 root root  197588 2009-01-01 05:30 soc1_0_ram_wifi_1a_1_hdr.bin
+-rw-r--r--  1 root root     132 2009-01-01 05:30 wifi.cfg
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_string_summary.txt ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/BT_FW.cfg ---
+coex_opp_time_ratio_wifi_slot: 0x00
+coex_lescan_time_ratio_wifi_slot: 0x00
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/WIFI_RAM_CODE_soc1_0_1a_1.bin ---
+C=ARB debug:: arb_cr_val [0x%x]
+ARB debug:: Reset TX Queue -Stop Queue [0x%x][0x%x]
+ARB debug:: Reset TX Queue -Start Queue [0x%x][0x%x]
+[TX] halDumpTXDebug Band 0 
+BBCCA Debug: 
+Dump ARB Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump AGG Debug Flag CR:DCR 01010101 %d, %d, %d 
+Dump DMA Debug Flag CR ...... %d, %d, %d 
+Dump TMAC Debug Flag CR ...... %d, %d, %d 
+halDumpDubegTMAC_DEBUG_FLAG ...... %d 
+halDumpDubegTMAC_DEBUG_FLAG End...... %d 
+../wifi/base/soc1_0/ram/hal/phy/cal/hal_cal_manu.c
+=========== PDMA%d debug probe ===========
+../wifi/core/middle/common/wh_pm.c
+../wifi/core/middle/common/wh_coex.c
+../wifi/core/middle/common/wh_hif.c
+../wifi/core/middle/common/wh_tx.c
+../wifi/core/middle/common/wh_fbm.c
+../wifi/core/middle/talos/wh_cap_talos.c
+../wifi/core/middle/talos/wh_sys_talos.c
+[5566]CheckBMPtoNotifyWifi: NTF_BMP:0x%x
+WIFI LISR handler
+../wifi/open_corebase/core/system/wsys_init.c
+WIFI_REGISTER_ASSERT_DUMP_HANDLER
+wifi_normal_operation_entry
+../wifi/open_corebase/core/system/wsys_isr.c
+../wifi/open_corebase/core/system/wsys_isr_handler.c
+# Found buffered packet in QID %d
+../wifi/open_corebase/core/system/wsys_mem.c
+../wifi/open_corebase/core/system/wsys_timer.c
+../wifi/open_corebase/core/system/wsys_init_fsm.c
+Wifi ASSERT @ %s:%u
+../wifi/custom/system/wsys_dbg.c
+../wifi/custom/system/wsys_cfg_chip.c
+ucCtrlFlagAssertPath %d , ucCtrlFlagDebugLevel%d 
+switch off Assert PATH from WIFI
+switch on Assert PATH to WIFI
+arSetDebug
+../wifi/custom/system/wsys_sw_ctrl.c
+../wifi/custom/system/wsys_mbox.c
+../wifi/custom/system/wsys_cmd.c
+TXM: (Warning) EVENT packet alloc failed 
+../wifi/open_corebase/core/wificore/mlm/bss_cfg.c
+HostBssUpdate1 Index:%x,Conn:%x,%x,SSIDLen:%x,QBSS:%x,Rate:%x,%x,IdxOfAP:%x 
+BSSInfo[0x%x] Connect DevInfo[0x%x] 
+Aging NULL transmitted OK, keep connection
+../wifi/open_corebase/core/wificore/mlm/bss_null.c
+../wifi/open_corebase/core/wificore/mlm/bss_sap_beacon.c
+------<mqmUpdateWMMParamForDebug>--Bss[%u], Ac[%u]--T[%u], A[%u] Cmax[%u], Cmin[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u],  curL[%u]
+------<mqmUpdateWmmByDebug>------BSS[%u], Ac[%u], key[%u], Val[%u]
+../wifi/core/wificore/mlm/mqm_cmm.c
+../wifi/core/wificore/mlm/mqm_ba.c
+MQM: (Warning) EVENT packet alloc failed 
+mqmBAHandleDisconnectionEvent
+../wifi/core/wificore/mlm/txm_cmm.c
+TXM: Enter txmSendPackets()
+TXM: Enter txmSendHifPackets()
+HIF Tx packet with invalid PID[%u]
+TXM: (Warning) Invalid packet type (Drop Pkt)
+TXM: Enter txmHandleDisconnectionEvent()
+txmSendHifPackets
+txmHifPacketSanityCheck
+../wifi/core/wificore/mlm/txq.c
+txmHasBufferedBmcPackets found BMC pkts %u
+TXM: Flush packet to DEFER, FID[%u]
+TXM: Flush "%u" packets to DEFER
+TXM: Flush packet to DROP, FID[%u]
+TXM: Flush "%u" packets to DROP
+IDC:after:puWifiOperCHLow:%d,puWifiOperCHHigh:%d
+COEX:ConnectProtectEn, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:ConnectProtectDis, BAND Tag[%d], WIFI Pri[%d], BT PF[%d] 
+COEX:%d:[U:A:AP:PS:CONN:PRO:DBDC:Rate][%d,%d,%d,%d,%d,%d,%d,%d]
+COEX:LTE_WD=%d,WIFI_WD=%d
+COEX:<RW><TDD>[ContiWiFiTime:%d ms]
+coexMonitor DbdcIdx:%d CurrentState:%d NextState:%d fgRWAbnormal:%d RwEn:%d
+coexMonitorTimeout DbdcIdx:%d fgRWAbnormal:%d CurState:%d RW=%d, RWEn=%d
+coexMonitorTimeout DbdcIdx:%d RW abnormal!! CurT:%d LastRWRec:%d LastIntExitRW:%d
+coexSetWifiAlwaysScan: %s, %s,(%d); %d, %x
+../wifi/core/wificore/mlm/coex_common_pta3.c
+COEX:coexUpdateBssLteWiFiOpMd: eDbdcIdx(%d) >= RAM_BAND_NUM
+Conn
+coexMonitorBTRwSteps
+coexRwMonitorTimeout
+Set Wifi Pwr:Max=%d,Min=%d.
+../wifi/core/wificore/mlm/coex_lte_pta3.c
+COEX: Send LTE SafeCh to Host : event packet alloc fauil.
+coexInjectCmd WiFi Tx Pwr back-off :on->off 
+coexInjectCmd WiFi Tx Pwr back-off :off->on 
+WiFi Tx Pwr back-off :no change 
+../wifi/open_corebase/core/wificore/mlm/coex_bt.c
+prStaRec->aucRxMcsBitmask[%d]= 0x%x
+McsSet %x RxMcs[0] %x.%x.%x VhtMcs %x Oper %x HtCap %x VhtCap %x bw %u RxSgi %x.%x.%x.%x
+../wifi/open_corebase/core/wificore/mlm/sta_rec.c
+u2VhtRxMcsMap:%x
+STARec %d, ConnectionState %d, Type 0x%x
+RXM: Enter staRecGetStaRecByTA()
+RXM: Enter rxmProcessBeaconFrame()
+rxmDefragMPDU
+../wifi/core/wificore/mlm/rxm.c
+RXM: Enter rxmIsDuplicateFrame()
+RXM: SC=0x%X (BA Entry present)
+RXM: (Warning) Unkown QoS Data with TID=%d
+RXM: SC= 0x%X (Cache[%d] updated)
+RXM: SC= 0x%X (Cache[%d] duplicate)
+RXM: Enter rxmProcessVendorSpecificAction()
+RXM: Enter rxmProcessActionFrame()
+rxmProcessActionFrame: ucCategory %x, ucAction %x
+RXM: Enter rxmHandleMgmtFrame()
+RXM: (Warning) MMPDU handler not found FC_SUBTYPE=%d 
+RXM: Enter rxmHandleCtrlFrame()
+RXM: (Warning) NULL Frame (Drop Pkt) 
+RXM: (Warning) Format Error? (Drop Pkt) 
+RXM: (Warning) MIC Verified Fail (Drop Pkt)
+RXM: DropReasonInSuspnedMode:BC%d, MC%d, PktDrop%d
+RXM: Enter rxmHandleDataFrame()
+RXM: (Warning) A Data frame with wrong state or w/o staRec (Drop Pkt) SN %d
+RXM: (Warning) Duplicate (Drop Pkt) SN %d
+RXM frag flow prSwRfb == NULL
+RXM: (Warning) A Control frame with NULL STA_REC (Drop Pkt)
+RXM: (Warning) Unknown frame type (Drop Pkt) 
+rxmHandleMacRxDone
+rxmInit
+rxmDequeueRxDonePacket
+RXM: (Warning) BssIndex %d Rx MC Filter invalid control setting %d
+Sniffer Mode Band%d %d
+../wifi/core/wificore/mlm/rxm_cmm.c
+RXM: Before u4RxFilter = 0x%x
+RXM: Enable promiscuous mode
+RXM: Disable promiscuous mode
+RXM: Enable all-multicast mode
+RXM: Enable multicast mode
+RXM: Disable multicast mode
+RXM: Enable Broadcast mode
+RXM: Disable Broadcast mode
+RXM: After u4RxFilter = 0x%x
+RXM: (Warning) rxmCmdMcastAddress invalid BssIndex, return
+RXM: Write u4NumOfGroupAddr=%d
+RXM: (Warning) rxmSeekAndSetMcastEntry return FALSE
+RXM: Enter rxmBufferPacket()
+RXM: Enter rxmIndicateMMPDUToHost()
+../wifi/open_corebase/core/wificore/mlm/wpa.c
+WPA: Truncated EAPOL-Key packet: key_data_length=%lu > extra_len=%lu
+WPA: EAPOL-Key Replay Counter did not increase - dropping packet
+WPA: Invalid EAPOL-Key MIC - dropping packet
+WPA: Could not verify EAPOL-Key MIC - dropping packet
+../wifi/core/wificore/mlm/cnm.c
+../wifi/core/wificore/mlm/cnm_radio.c
+../wifi/open_corebase/core/wificore/mlm/privacy.c
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->u2VhtRxMcsMap=%x
+[%s]BSSINFO_GET_TX_STREAM=%x: prStaRec->aucRxMcsBitmask[0][1][2][3]=[%x][%x][%x][%x]
+RxMcs_0
+RxMcs_1
+RxMcs_2
+RxMcs_3
+RxMcs_4
+VhtRxMcs
+../wifi/core/wificore/rlm/ra_wrapper_mobile.c
+raIndicateStaDisconnected
+../wifi/core/wificore/rlm/rlm.c
+../wifi/core/wificore/rlm/rlm_phy.c
+BFEventPfmuPnReadToWifiHifWrapper Failed: u4Status=%d
+BFEventPfmuDataReadToWifiHifWrapper Failed
+BFEventPfmuTagReadToWifiHifWrapper Failed
+%s : Wifi-spectrum is enable !!
+%s: WifiSpectrumCtrl FuncIndex = %d
+wifiSpectrumExtCmdHandler
+../wifi/open_corebase/core/wificore/rlm/domain.c
+../wifi/core/wificore/rlm/txpwr.c
+TEST: u4PacketIntervalUs=%ld, u2RandomNumForAC=0x%04x
+../wifi/open_corebase/core/wificore/rlm/rlm_test.c
+Packet Length = %d 
+End capture Radar, starting dump.... 
+Attributes of TX Packets:
+Tx PacketCnt is 0!
+../wifi/open_corebase/core/wificore/wsm/pwr_ctrl.c
+Keep full power (i=%d, P2P is connected)
+Keep full power (i=%d, connected idle)
+../wifi/open_corebase/core/wificore/wsm/rate.c
+antSwapDecideIfDisabled Not satisfied with only one AIS connection->Disabled 
+../wifi/custom/feature/pm_sap.c
+../wifi/custom/feature/linkdt_sap.c
+../wifi/custom/feature/suspend_mode.c
+../wifi/custom/feature/pm_cmm.c
+pmCmmCmdIndicateBssConnected: Invalid length (%d : %d)
+pmCmmCmdIndicateBssConnected (ucBssIndex=%d)
+pmCmmCmdIndicateBssConnected
+pmCmmInitOnConnect
+[hemChipCfg]prPmProfSetupInfo->u2ActModeSwIntv_Conn = %d
+../wifi/custom/feature/pm_sta.c
+->pmStaOnConnectDeferredTimeout(): %08x %08x
+[Fast PS] BSS[%u] Skip check due to KeepActiveOnConnect is TRUE
+**  (ucBssIndex:%d, eConnectionState:%d, eCurrentOPMode:%d, eBssAvailState:%d)
+pmStaOnConnectDeferredTimeout
+../wifi/custom/feature/scan.c
+../wifi/custom/feature/scan_fsm.c
+BSS[%u] is inctive or disconnect, skip config.
+bypass check, due to Connection Diagnosis already started!!
+Try to send NULL for Connection Diagnosis, BSS[%u]
+Connection Quality is OK, keep connection! NULL SN[%u],txS[%u]
+Connection Quality is poor! txS[%u] NULL SN[%u] round[%u,%u] !
+linkDtStaRunEventDiagnosisOfConn(), retry:%u 
+BEACON_TIMEOUT_DUE_2_CONNECTION_FAIL
+RMo Not yet ready for RSSI monitor due to no bcn rate updated
+RMo rssiMonitorMonitorRssiAndIndicateToHif: Warning!! EVENT packet allocation failure!
+rssiMonitorUtSetMaxMin
+rssiMonitorTimeout
+rssiMonitorCmdProcRssiMonitor
+../wifi/custom/feature/wfc_keep_alive.c
+KEEP_ALIVE: Keep Alive Timeout...Send Packet to Server[%d]
+../wifi/custom/feature/stats.c
+TDLS: (Warning) EVENT packet alloc failed 
+../wifi/custom/feature/tdls.c
+RXM:TDLS_HOST_EVENT_TD_PTI_TIMEOUT 22  
+../wifi/custom/feature/pm_p2p.c
+../wifi/custom/feature/pm_trap.c
+../wifi/custom/feature/p2p.c
+pktDropCmdSetDropPacketCfg IPV4[%08x] IPV6[%08x] SNAP[%08x]
+../wifi/custom/feature/arp_ns.c
+../wifi/custom/feature/rrm_action.c
+../wifi/custom/feature/rrm_quiet.c
+../wifi/custom/feature/rrm_voe.c
+DisconnectTimeAIS
+DisconnectTimeP2P
+DisconnectTimeBT
+DropPacketsIPV4Low
+DropPacketsIPV4High
+DropPacketsIPV6Low
+DropPacketsIPV6High
+DropPacketsSNAPLow
+DropPacketsSNAPHigh
+setDropPacketCfg
+rxm_ut
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/WMT_SOC.cfg ---
+bt_tssi_from_wifi=3
+wifi_ant_swap_mode=0
+wifi_main_ant_polarity=0
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/cts_ts_fw_hkc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/fm_cust.cfg ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/fs1801.fsm ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt1151_default_firmware2.img ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6785v96.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6785v99.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6885v9c.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6785.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6877.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_90hz6885.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_cfg_gt9885v1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6781v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6785a4.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6785ae.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6853v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6873v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6877af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6877v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885a1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885af.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885b0.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885b1.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6885v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/gt9886_firmware_6893v01.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/lib3a.ccu ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/mt6631_fm_v1_coeff.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/mt6631_fm_v1_patch.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_mp_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_boe_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_60hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/novatek_ts_fw_lc_thin_90hz.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/remoteproc_scp ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/sipa.bin ---
+--- /sdcard/Download/redmi_wifi_stack_extract/firmware_vendor_firmware/soc1_0_patch_mcu_1a_1_hdr.bin ---
+%s:arg0=%d,idc_wifi_always_scan=%d
+ram_cb-%d(WF_CB_WIFI_BT_PTA_CTRL):0x%x,0x%x,0x%x
+Patch__wmt_wifi_coex_ram_callback
+Patch__wmt_indicate_connsys_def_param

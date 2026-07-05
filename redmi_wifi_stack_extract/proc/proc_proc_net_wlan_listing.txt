@@ -1,0 +1,12 @@
+total 0
+dr-xr-xr-x 67 shell wifi 0 2026-07-05 11:17 .
+dr-xr-xr-x 68 root  root 0 2026-07-05 11:17 ..
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 autoPerfCfg
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 cfg
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 country
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 dbgLevel
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 driver
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 efuse_dump
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 mcr
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 pktDelay
+-rw-rw-r--  1 shell wifi 0 2026-07-05 11:17 setCAM

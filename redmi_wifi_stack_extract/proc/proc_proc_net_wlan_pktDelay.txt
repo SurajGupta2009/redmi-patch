@@ -1,0 +1,10 @@
+
+Usage: txLog/rxLog/reset 1(ICMP)/6(TCP)/11(UDP) Dst/SrcPortNum DelayThreshold(us)
+Print tx delay log,                                   such as: echo txLog 0 0 0 > pktDelay
+Print tx UDP delay log,                               such as: echo txLog 11 0 0 > pktDelay
+Print tx UDP dst port19305 delay log,                 such as: echo txLog 11 19305 0 > pktDelay
+Print rx UDP src port19305 delay more than 500us log, such as: echo rxLog 11 19305 500 > pktDelay
+Print tx TCP delay more than 500us log,               such as: echo txLog 6 0 500 > pktDelay
+Close log,                                            such as: echo reset 0 0 0 > pktDelay
+
+reset 0 0 0, there is no tx/rx delay log

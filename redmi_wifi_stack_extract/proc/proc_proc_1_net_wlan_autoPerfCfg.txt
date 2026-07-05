@@ -1,0 +1,5 @@
+Auto Performance Configure Usage:
+
+echo ForceEnable:0 or 1 > /proc/net/wlan/autoPerfCfg
+     1: always enable performance monitor
+     0: restore performance monitor's default strategy

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<!-- MIUI ADD:Build_MIUIBuildFrame -->
+<thermal-brightness-config>
+    <thermal-condition-item>
+        <identifier>0</identifier>
+        <description>Default</description>
+        <temperature-brightness-pair>
+            <min-inclusive>39</min-inclusive>
+            <max-exclusive>41</max-exclusive>
+            <nit>500</nit>
+        </temperature-brightness-pair>
+        <temperature-brightness-pair>
+            <min-inclusive>41</min-inclusive>
+            <max-exclusive>43</max-exclusive>
+            <nit>400</nit>
+        </temperature-brightness-pair>
+        <temperature-brightness-pair>
+            <min-inclusive>43</min-inclusive>
+            <max-exclusive>46</max-exclusive>
+            <nit>250</nit>
+        </temperature-brightness-pair>
+        <temperature-brightness-pair>
+            <min-inclusive>46</min-inclusive>
+            <max-exclusive>100</max-exclusive>
+            <nit>160</nit>
+        </temperature-brightness-pair>
+    </thermal-condition-item>
+</thermal-brightness-config>
+<!-- END Build_MIUIBuildFrame -->

@@ -1,0 +1,671 @@
+=== MODULE VERMAGIC ===
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/CPU_DVFS.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/MTK_INTERNAL_SPM.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/Upower.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/accel_common.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/accelhub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/alsps_common.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/alspshub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/archcounter_timesync.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/arm_dsu_pmu.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/asix.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/atf_logger.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ax88179_178a.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/baro_common.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/barohub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/binder_gki.ko ---
+vermagic=5.10.198-gki-g59fa3522c8cc SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/bt_drv_connac1x.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/btif_drv.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/c2k_usb.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/c2k_usb_f_via_atc.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/c2k_usb_f_via_ets.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/c2k_usb_f_via_gps.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/c2k_usb_f_via_modem.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/c2k_usb_f_via_pcv.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/cache-parity.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/cam_qos_4.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/camera_dpe_isp40.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/camera_eeprom_isp4.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/camera_fdvt_isp40.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/camera_isp_4_t.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/camera_mem.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_auxadc.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_ccif.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_cldma.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_fsm_scp.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_md_all.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_md_clk.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_rtc.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccci_util_lib.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccmni.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ccu_isp4.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/cmdq-bdg-mailbox.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/cmdq-sec-drv.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/cmdq-test.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/connadp.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/cpufreq_sugov_ext.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/cpumaxfreq.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/fhctl.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/flashlight.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/flashlights-mt6768.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/fmradio_drv_mt6631.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/fpsgo.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/fusion.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gamerotvechub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/ged.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gmagrotvechub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gps_drv_stp.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gravityhub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gt1151.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gt9886.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gz_ipc_mod.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gz_irq_mod.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gz_log_mod.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gz_main_mod.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gz_trusty_mod.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gz_tz_system.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/gz_virtio_mod.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/hall_state.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/hwmon.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/icnl9951r_spi.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/imgsensor_isp4.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/iommu_gz.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/iommu_test.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/iommu_tz_debug.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/iommu_tz_sec.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/leds-mt6370-flash.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/linearacchub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/load_track.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mag_common.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/maghub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/main2af.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/main3af.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mainaf.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mali_kbase_mt6768.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mali_mgm_mt6768.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mcdi.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mali_prot_alloc_mt6768.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mdp_drv_mt6768.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mediatek_dcm.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mediatek_eem.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mediatek_static_power.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_backlight_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_emi_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_gpu_adv_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_gpu_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_ipi_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_mcupm_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_scmi_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_sspm_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/met_vcore_api.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/millet_binder.ko ---
+vermagic=5.10.198-gki-g59fa3522c8cc SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/millet_core.ko ---
+vermagic=5.10.198-gki-g59fa3522c8cc SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/millet_hs.ko ---
+vermagic=5.10.198-gki-g59fa3522c8cc SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/millet_oem_cgroup.ko ---
+vermagic=5.10.198-gki-g59fa3522c8cc SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/millet_pkg.ko ---
+vermagic=5.10.198-gki-g59fa3522c8cc SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/millet_sig.ko ---
+vermagic=5.10.198-gki-g59fa3522c8cc SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mt6358-accdet.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mt63xx-debug.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mt6768-mt6358.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-afe-external.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-btcvsd.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-composite.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-cqdma.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-dvfsrc-devfreq.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-dvfsrc-helper.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-dvfsrc-start.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-mbox.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-pm-domain-disable-unused.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-pwm.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-smi-bwc.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-sp-spk-amp.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-vcodec-common.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-vcodec-dec-v1.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-vcodec-enc-v1.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk-vcu.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_battery_oc_throttling.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_bp_thl.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_cm_mgr.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_cm_mgr_mt6768.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_core_ctl.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_cpu_power_throttling.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_disp_sec.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_dynamic_loading_throttling.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_fpsgo.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_gpu_hal.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_gpufreq_mt6768.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_gpufreq_wrapper.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_heap_debug.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_irtx_pwm.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_jpeg.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_low_battery_throttling.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_mdpm_v1.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_pbm.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_perf_common.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_perf_ioctl.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_power_gs_v1.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_ppm_v3.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_qos_legacy.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_rpmsg_mbox.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_sec_heap.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_tinysys_ipi.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_u_ether.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/mtk_usb_f_rndis.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/musb_boost.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/nt36523d_spi.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/nvmem-mt635x-efuse.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/orienthub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/reboot-mode.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/rotatvechub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/saralgo.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/saralgo_factory.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/sensorHub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/sensor_probe.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/situation.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/snd-soc-mt6768-afe.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/snd-soc-sipa-tuning.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/snd-soc-sipa.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/step_counter.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/stepsignhub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/sub2af.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/trusted_mem.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/tyhx_sensorhub_test.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/udc_lib.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/widevine_driver.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/wlan_drv_gen4m.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/xiaomi_touch.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/xm_smart_chg.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/rps_perf.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/rtc-mt6397.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/saralgo_top.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/scheduler.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/scp.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/sec.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/sensor_list.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/simtray.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/situationhub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/snd-soc-mt6358.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/snd-soc-mtk-common.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/sspm_v1.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/subaf.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/syscon-reboot-mode.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/task_turbo.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/thermal_monitor.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/tpd_notify.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/trace_mmstat.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/trigger_panic.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/uload_ind.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/uncali_acchub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/uncali_maghub.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/v4l2-flash-led-class.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/wmt_chrdev_wifi.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/wmt_drv.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/xiaomi_usb_touch_notifier.ko ---
+vermagic=5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64
+__UNIQUE_ID_vermagic264
+
+=== WLAN MODULE STRINGS ===
+--- /sdcard/Download/redmi_wifi_stack_extract/modules_vendor_lib_modules/wlan_drv_gen4m.ko ---
+[%u]%s:(SW4 INFO) perf monitor started
+[%u]%s:(SW4 TRACE) perf monitor already stopped
+[%u]%s:(REQ ERROR) SNIFFER CMD: Number of PARAMETERS is WRONG
+ArpMonitorNumber
+ArpMonitorRxPktNum
+[%u]%s:(OID TRACE) Set RSSI monitor when disconnected, enable=%d
+priv_driver_sniffer
+[%u]%s:(TX LOUD) [F] monitor list(%p) len:%d
+[%u]%s:(TX TRACE) No match add into monitor list
+[%u]%s:(TX WARN) No memory for TCP Monitor
+[%u]%s:(NIC TRACE) TCP ACK:%d, monitored SEQ:%d
+wlanoidSetIcsSniffer
+[%u]%s:(RX TRACE) EVENT_ID_RSSI_MONITOR value=%d
+mtk_cfg80211_vendor_set_rssi_monitoring
+[%u]%s:(TX TRACE) Current 5-tuple already in monitoring list
+[%u]%s:(TX TRACE) Flush all monitor TCP(%d)
+SNIFFER
+wlanLinkQualityMonitor
+[%u]%s:(TX TRACE) No match, add into monitor list
+[%u]%s:(SW4 TRACE) perf monitor disabled
+mscsAddTcpForMonitor
+mscsIsTcpNeedMonitor
+[%u]%s:(INIT INFO) wlanoidSetIcsSniffer failed
+[%u]%s:(TX TRACE) [F] TCP monitor list(%p) len:%d
+[%u]%s:(SW4 INFO) perf monitor stopped
+[%u]%s:(SW4 TRACE) Skip wlanLinkQualityMonitor due to in suspend mode
+wlanoidRssiMonitor
+[%u]%s:(NIC INFO) u4MonitorWindow: %d, u4CurrentTime: %d, u4LastRxTime: %d, u4LastTxTime: %d
+[%u]%s:(TX LOUD) Current 5-tuple already in monitoring list
+[%u]%s:(TX TRACE) [F] monitor list(%p) len:%d
+nicEventRssiMonitor
+ACTIVE  : In-serive monitoring
+[%u]%s:(TX TRACE) Current TCP already in monitoring list
+[%u]%s:(SW4 WARN) abnormal, perf monitor already running
+[%u]%s:(SW4 INFO) uFlag:%d, wlan_perf_monitor_ctrl_flag:%d
+     1: always enable performance monitor
+     0: restore performance monitor's default strategy
+mscsFlushMonitorTcp
+nicEventRssiMonitor.cfi_jt
+wlanoidRssiMonitor.cfi_jt
+priv_driver_sniffer.cfi_jt
+wlanoidSetIcsSniffer.cfi_jt
+mtk_cfg80211_vendor_set_rssi_monitoring.cfi_jt
+nla_parse_wifi_rssi_monitor
+wlanLinkQualityMonitor
+mscsAddTcpForMonitor
+nicEventRssiMonitor
+wlanoidRssiMonitor
+mscsIsTcpNeedMonitor
+priv_driver_sniffer
+wlanoidSetIcsSniffer
+mscsFlushMonitorTcp
+wlanCustomMonitorFunction
+mtk_cfg80211_vendor_set_rssi_monitoring
+wlan_perf_monitor_force_enable
+wlanSetPromiscuousMode
+nicRxDisablePromiscuousMode
+nicRxEnablePromiscuousMode

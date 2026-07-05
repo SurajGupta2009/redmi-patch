@@ -1,0 +1,1 @@
+cat: /proc/net/wlan/efuse_dump: Operation not permitted

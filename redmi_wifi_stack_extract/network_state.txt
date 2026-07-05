@@ -1,0 +1,319 @@
+=== IP LINK ===
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ether 9e:0f:e6:8e:9c:8c brd ff:ff:ff:ff:ff:ff
+3: ifb0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 32
+    link/ether f6:2e:e0:0b:bd:8a brd ff:ff:ff:ff:ff:ff
+4: ifb1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 32
+    link/ether ee:59:88:34:ca:08 brd ff:ff:ff:ff:ff:ff
+5: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+6: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/gre 0.0.0.0 brd 0.0.0.0
+7: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+8: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+9: ip_vti0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+10: ip6_vti0@NONE: <NOARP> mtu 1364 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/tunnel6 :: brd ::
+11: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+12: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/tunnel6 :: brd ::
+13: ip6gre0@NONE: <NOARP> mtu 1448 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/gre6 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00 brd 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+14: ccmni0: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+15: ccmni1: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+16: ccmni2: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+17: ccmni3: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+18: ccmni4: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+19: ccmni5: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+20: ccmni6: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+21: ccmni7: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+22: ccmni8: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+23: ccmni9: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+24: ccmni10: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+25: ccmni11: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+26: ccmni12: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+27: ccmni13: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+28: ccmni14: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+29: ccmni15: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+30: ccmni16: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+31: ccmni17: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+32: ccmni18: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+33: ccmni19: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+34: ccmni20: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 
+35: ccmni-lan: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 
+37: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DORMANT group default qlen 3000
+    link/ether 9a:5a:c1:e4:f7:19 brd ff:ff:ff:ff:ff:ff
+38: wlan1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 3000
+    link/ether e8:5f:b4:74:bb:72 brd ff:ff:ff:ff:ff:ff
+55: p2p0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ea:5f:b4:76:bb:72 brd ff:ff:ff:ff:ff:ff
+56: ap0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ee:5f:b4:76:bb:72 brd ff:ff:ff:ff:ff:ff
+
+=== IW DEV ===
+phy#0
+	Interface ap0
+		ifindex 56
+		wdev 0x14
+		addr ee:5f:b4:76:bb:72
+		type AP
+	Interface p2p0
+		ifindex 55
+		wdev 0x13
+		addr ea:5f:b4:76:bb:72
+		type P2P-client
+	Interface wlan1
+		ifindex 38
+		wdev 0x2
+		addr e8:5f:b4:74:bb:72
+		type managed
+	Interface wlan0
+		ifindex 37
+		wdev 0x1
+		addr 9a:5a:c1:e4:f7:19
+		ssid Nikhil's 5G Galaxie
+		type managed
+
+=== IW LIST ===
+Wiphy phy0
+	wiphy index: 0
+	max # scan SSIDs: 11
+	max scan IEs length: 512 bytes
+	max # sched scan SSIDs: 10
+	max # match sets: 16
+	Retry short limit: 7
+	Retry long limit: 4
+	Coverage class: 0 (up to 0m)
+	Device supports roaming.
+	Device supports T-DLS.
+	Supported Ciphers:
+		* WEP40 (00-0f-ac:1)
+		* WEP104 (00-0f-ac:5)
+		* TKIP (00-0f-ac:2)
+		* CCMP-128 (00-0f-ac:4)
+		* CMAC (00-0f-ac:6)
+		* GCMP-256 (00-0f-ac:9)
+		* GCMP-128 (00-0f-ac:8)
+		* GMAC-256 (00-0f-ac:12)
+		* 00-0f-ac:7
+	Available Antennas: TX 0 RX 0
+	Supported interface modes:
+		 * IBSS
+		 * managed
+		 * AP
+		 * P2P-client
+		 * P2P-GO
+	Band 1:
+		Capabilities: 0x7e
+			HT20/HT40
+			SM Power Save disabled
+			RX Greenfield
+			RX HT20 SGI
+			RX HT40 SGI
+			No RX STBC
+			Max AMSDU length: 3839 bytes
+			No DSSS/CCK HT40
+		Maximum RX AMPDU length 65535 bytes (exponent: 0x003)
+		Minimum RX AMPDU time spacing: No restriction (0x00)
+		HT TX/RX MCS rate indexes supported: 0-7
+		Bitrates (non-HT):
+			* 1.0 Mbps
+			* 2.0 Mbps
+			* 5.5 Mbps
+			* 11.0 Mbps
+			* 6.0 Mbps
+			* 9.0 Mbps
+			* 12.0 Mbps
+			* 18.0 Mbps
+			* 24.0 Mbps
+			* 36.0 Mbps
+			* 48.0 Mbps
+			* 54.0 Mbps
+		Frequencies:
+			* 2412 MHz [1] (0.0 dBm)
+			* 2417 MHz [2] (0.0 dBm)
+			* 2422 MHz [3] (0.0 dBm)
+			* 2427 MHz [4] (0.0 dBm)
+			* 2432 MHz [5] (0.0 dBm)
+			* 2437 MHz [6] (0.0 dBm)
+			* 2442 MHz [7] (0.0 dBm)
+			* 2447 MHz [8] (0.0 dBm)
+			* 2452 MHz [9] (0.0 dBm)
+			* 2457 MHz [10] (0.0 dBm)
+			* 2462 MHz [11] (0.0 dBm)
+			* 2467 MHz [12] (0.0 dBm)
+			* 2472 MHz [13] (0.0 dBm)
+			* 2484 MHz [14] (disabled)
+	Band 2:
+		Capabilities: 0x7e
+			HT20/HT40
+			SM Power Save disabled
+			RX Greenfield
+			RX HT20 SGI
+			RX HT40 SGI
+			No RX STBC
+			Max AMSDU length: 3839 bytes
+			No DSSS/CCK HT40
+		Maximum RX AMPDU length 65535 bytes (exponent: 0x003)
+		Minimum RX AMPDU time spacing: No restriction (0x00)
+		HT TX/RX MCS rate indexes supported: 0-7
+		VHT Capabilities (0xc00018be):
+			Max MPDU length: 11454
+			Supported Channel Width: (reserved)
+			RX LDPC
+			short GI (80 MHz)
+			TX STBC
+			SU Beamformer
+			SU Beamformee
+		VHT RX MCS set:
+			1 streams: MCS 0-9
+			2 streams: MCS 0-9
+			3 streams: not supported
+			4 streams: not supported
+			5 streams: not supported
+			6 streams: not supported
+			7 streams: not supported
+			8 streams: not supported
+		VHT RX highest supported: 867 Mbps
+		VHT TX MCS set:
+			1 streams: MCS 0-9
+			2 streams: MCS 0-9
+			3 streams: not supported
+			4 streams: not supported
+			5 streams: not supported
+			6 streams: not supported
+			7 streams: not supported
+			8 streams: not supported
+		VHT TX highest supported: 867 Mbps
+		Bitrates (non-HT):
+			* 6.0 Mbps
+			* 9.0 Mbps
+			* 12.0 Mbps
+			* 18.0 Mbps
+			* 24.0 Mbps
+			* 36.0 Mbps
+			* 48.0 Mbps
+			* 54.0 Mbps
+		Frequencies:
+			* 5180 MHz [36] (0.0 dBm)
+			* 5200 MHz [40] (0.0 dBm)
+			* 5220 MHz [44] (0.0 dBm)
+			* 5240 MHz [48] (0.0 dBm)
+			* 5260 MHz [52] (0.0 dBm) (radar detection)
+			* 5280 MHz [56] (0.0 dBm) (radar detection)
+			* 5300 MHz [60] (0.0 dBm) (radar detection)
+			* 5320 MHz [64] (0.0 dBm) (radar detection)
+			* 5500 MHz [100] (0.0 dBm) (radar detection)
+			* 5520 MHz [104] (0.0 dBm) (radar detection)
+			* 5540 MHz [108] (0.0 dBm) (radar detection)
+			* 5560 MHz [112] (0.0 dBm) (radar detection)
+			* 5580 MHz [116] (0.0 dBm) (radar detection)
+			* 5600 MHz [120] (0.0 dBm) (radar detection)
+			* 5620 MHz [124] (0.0 dBm) (radar detection)
+			* 5640 MHz [128] (0.0 dBm) (radar detection)
+			* 5660 MHz [132] (0.0 dBm) (radar detection)
+			* 5680 MHz [136] (0.0 dBm) (radar detection)
+			* 5700 MHz [140] (0.0 dBm) (radar detection)
+			* 5720 MHz [144] (0.0 dBm) (radar detection)
+			* 5745 MHz [149] (0.0 dBm)
+			* 5765 MHz [153] (0.0 dBm)
+			* 5785 MHz [157] (0.0 dBm)
+			* 5805 MHz [161] (0.0 dBm)
+			* 5825 MHz [165] (0.0 dBm)
+	Supported commands:
+		 * new_interface
+		 * set_interface
+		 * new_key
+		 * start_ap
+		 * new_station
+		 * set_bss
+		 * associate
+		 * deauthenticate
+		 * disassociate
+		 * join_ibss
+		 * set_pmksa
+		 * del_pmksa
+		 * flush_pmksa
+		 * remain_on_channel
+		 * set_tx_bitrate_mask
+		 * frame
+		 * frame_wait_cancel
+		 * set_channel
+		 * tdls_mgmt
+		 * tdls_oper
+		 * start_sched_scan
+		 * testmode
+		 * connect
+		 * disconnect
+		 * channel_switch
+		 * update_connect_params
+		 * update_ft_ies
+	WoWLAN support:
+		 * wake up on anything (device continues operating normally)
+		 * wake up on disconnect
+		 * wake up on magic packet
+	software interface modes (can always be added):
+		 * P2P-device
+	valid interface combinations:
+		 * #{ managed } <= 3, #{ P2P-client, P2P-GO } <= 1,
+		   total <= 3, #channels <= 2
+	Device has client inactivity timer.
+	Device supports SAE with AUTHENTICATE command
+	Device supports scan flush.
+	Device supports randomizing MAC-addr in scans.
+	Device supports randomizing MAC-addr in sched scans.
+	max # scan plans: 1
+	max scan plan interval: -1
+	max scan plan iterations: 0
+	Supported TX frame types:
+		 * IBSS: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * managed: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * AP: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * AP/VLAN: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * P2P-client: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * P2P-GO: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+	Supported RX frame types:
+		 * IBSS: 0xd0
+		 * managed: 0x40 0xb0 0xd0
+		 * AP: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 * AP/VLAN: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 * P2P-client: 0x40 0xb0 0xd0
+		 * P2P-GO: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+	Maximum associated stations in AP mode: 16
+	Supported extended features:
+		* [ FILS_MAX_CHANNEL_TIME ]: FILS max channel attribute override with dwell time
+		* [ ACCEPT_BCAST_PROBE_RESP ]: accepts broadcast probe response
+		* [ OCE_PROBE_REQ_HIGH_TX_RATE ]: probe request TX at high rate (at least 5.5Mbps)
+		* [ OCE_PROBE_REQ_DEFERRAL_SUPPRESSION ]: probe request tx deferral and suppression
+		* [ LOW_SPAN_SCAN ]: low span scan
+
+=== ROUTES ===
+192.168.236.0/24 dev wlan0 proto kernel scope link src 192.168.236.169 
