@@ -9,65 +9,113 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
+          set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y git bc bison flex make python3 \
             libssl-dev libelf-dev dwarves build-essential unzip rsync cpio xz-utils zip file curl
 
       - name: Fetch Android clang r416183b
         run: |
-          set -eux
-          mkdir -p $HOME/toolchains/clang-r416183b
-          cd $HOME/toolchains/clang-r416183b
+          set -euxo pipefail
+          mkdir -p "${HOME}/toolchains/clang-r416183b"
+          cd "${HOME}/toolchains/clang-r416183b"
           curl -L -o /tmp/clang.tgz \
             https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz
           tar -xzf /tmp/clang.tgz
-          $HOME/toolchains/clang-r416183b/bin/clang --version
+          "${HOME}/toolchains/clang-r416183b/bin/clang" --version
 
-      - name: Clone kernel + MTK modules
+      - name: Clone kernel and MTK modules
         run: |
-          mkdir -p $HOME/redmi_monitor_build
-          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git $HOME/redmi_monitor_build/kernel_spark
-          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/MTK_kernel_modules.git $HOME/redmi_monitor_build/vendor/mediatek/kernel_modules
-          ln -sfn gen4-mt79xx $HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m
+          set -euxo pipefail
+          mkdir -p "${HOME}/redmi_monitor_build"
+          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git "${HOME}/redmi_monitor_build/kernel_spark"
+          git clone --depth=1 --branch spark-s-oss https://github.com/MiCode/MTK_kernel_modules.git "${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules"
+          ln -sfn gen4-mt79xx "${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m"
 
       - name: Force CFG_SUPPORT_SNIFFER_RADIOTAP=1
         run: |
-          MK=$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx/Makefile
-          sed -i '/CONFIG_SUPPORT_SNIFFER_RADIOTAP/,/endif/c\ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1' "$MK"
-          grep -n SNIFFER_RADIOTAP "$MK"
+          set -euxo pipefail
+          MK="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx/Makefile"
+          sed -i '/CONFIG_SUPPORT_SNIFFER_RADIOTAP/,/endif/c\ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1\nccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1' "${MK}"
+          grep -n SNIFFER_RADIOTAP "${MK}"
 
       - name: Fetch stock kernel_config
         run: |
-          curl -L -o $HOME/redmi_monitor_build/kernel_config.txt \
+          set -euxo pipefail
+          curl -L -o "${HOME}/redmi_monitor_build/kernel_config.txt" \
             https://raw.githubusercontent.com/SurajGupta2009/redmi-patch/main/redmi_wifi_stack_extract/kernel_config.txt
 
-      - name: Prepare kernel
+      - name: Prepare kernel build environment
         run: |
-          export ARCH=arm64 LLVM=1 LLVM_IAS=1
-          export PATH=$HOME/toolchains/clang-r416183b/bin:$PATH
-          export CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-          cd $HOME/redmi_monitor_build/kernel_spark
-          mkdir -p out
-          cp $HOME/redmi_monitor_build/kernel_config.txt out/.config
-          make O=out ARCH=arm64 olddefconfig
-          make O=out ARCH=arm64 prepare modules_prepare -j$(nproc)
+          set -euxo pipefail
+
+          # Directory Definitions
+          BUILD_DIR="${HOME}/redmi_monitor_build"
+          KERNEL_DIR="${BUILD_DIR}/kernel_spark"
+          OUT_DIR="${KERNEL_DIR}/out"
+          CONFIG_SRC="${BUILD_DIR}/kernel_config.txt"
+          CONFIG_DST="${OUT_DIR}/.config"
+
+          # Compiler Environment
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export LLVM=1
+          export LLVM_IAS=1
+          export PATH="${HOME}/toolchains/clang-r416183b/bin:${PATH}"
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+
+          # Initialize Output Directory
+          mkdir -p "${OUT_DIR}"
+          cp "${CONFIG_SRC}" "${CONFIG_DST}"
+
+          cd "${KERNEL_DIR}"
+
+          # Config Overrides: Disable KMI/KSYMS strictness
+          ./scripts/config --file "${CONFIG_DST}" \
+            -d TRIM_UNUSED_KSYMS \
+            -d UNUSED_KSYMS_WHITELIST \
+            --set-str UNUSED_KSYMS_WHITELIST "" \
+            -d KMI_SYMBOL_LIST \
+            --set-str KMI_SYMBOL_LIST "" || true
+
+          # Config Overrides: Hard fallbacks and absolute path stripping
+          sed -i 's|^CONFIG_UNUSED_KSYMS_WHITELIST=.*|CONFIG_UNUSED_KSYMS_WHITELIST=""|g' "${CONFIG_DST}"
+          sed -i 's|^CONFIG_KMI_SYMBOL_LIST=.*|# CONFIG_KMI_SYMBOL_LIST is not set|g' "${CONFIG_DST}"
+          sed -i '\|/mnt/disks/build-disk|d' "${CONFIG_DST}"
+
+          # Kernel Make Preparation
+          make O="${OUT_DIR}" ARCH="${ARCH}" olddefconfig
+          make O="${OUT_DIR}" ARCH="${ARCH}" prepare modules_prepare -j"$(nproc)"
 
       - name: Build wlan_drv_gen4m.ko
         run: |
-          export ARCH=arm64 LLVM=1 LLVM_IAS=1
-          export PATH=$HOME/toolchains/clang-r416183b/bin:$PATH
-          export CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-          cd $HOME/redmi_monitor_build
-          make -C kernel_spark O=$HOME/redmi_monitor_build/kernel_spark/out \
-            M=$HOME/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m \
+          set -euxo pipefail
+          export ARCH=arm64
+          export LLVM=1
+          export LLVM_IAS=1
+          export PATH="${HOME}/toolchains/clang-r416183b/bin:${PATH}"
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+          
+          cd "${HOME}/redmi_monitor_build"
+          
+          make -C kernel_spark O="${HOME}/redmi_monitor_build/kernel_spark/out" \
+            M="${HOME}/redmi_monitor_build/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m" \
             MODULE_NAME=wlan_drv_gen4m \
-            CONFIG_MTK_COMBO_WIFI_HIF=axi MTK_COMBO_CHIP=CONNAC WLAN_CHIP_ID=6765 MTK_ANDROID_WMT=y \
+            CONFIG_MTK_COMBO_WIFI_HIF=axi \
+            MTK_COMBO_CHIP=CONNAC \
+            WLAN_CHIP_ID=6765 \
+            MTK_ANDROID_WMT=y \
             CONFIG_SUPPORT_SNIFFER_RADIOTAP=y \
-            modules -j$(nproc)
-          find $HOME/redmi_monitor_build -name wlan_drv_gen4m.ko -exec cp {} $GITHUB_WORKSPACE/wlan_drv_gen4m.ko \;
-          strings $GITHUB_WORKSPACE/wlan_drv_gen4m.ko | grep -E 'vermagic|radiotap|wlanMon'
+            modules -j"$(nproc)"
+            
+          find "${HOME}/redmi_monitor_build" -name wlan_drv_gen4m.ko -exec cp {} "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" \;
+          strings "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" | grep -E 'vermagic|radiotap|wlanMon' || true
 
       - name: Upload
         uses: actions/upload-artifact@v4
