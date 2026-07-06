@@ -165,9 +165,10 @@ jobs:
           cp "${CONFIG_SRC}" "${CONFIG_DST}"
           cd "${KERNEL_DIR}"
 
-          # Disable setlocalversion script so it does NOT append an extra '+' when the git tree is dirty
+          # Override setlocalversion script to always print exactly '-android12-9+'
+          # This prevents both missing localversion (5.10.198) and double-plus dirty git flags (-android12-9++)
           echo '#!/bin/sh' > scripts/setlocalversion
-          echo 'echo ""' >> scripts/setlocalversion
+          echo 'echo "-android12-9+"' >> scripts/setlocalversion
           chmod +x scripts/setlocalversion
 
           # Ensure localversion matches stock (-android12-9+) and disable git hash append
