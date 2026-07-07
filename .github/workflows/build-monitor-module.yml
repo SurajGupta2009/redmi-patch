@@ -135,7 +135,7 @@ jobs:
 
           new = """# Redmi Pad SE 8.7 4G spark monitor-mode build
           ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1
-          ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1"""
+          ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=0"""
 
           if old in s:
               s = s.replace(old, new)
@@ -192,6 +192,25 @@ jobs:
                          "#define CFG_WLAN_ASSISTANT_NVRAM 1", s)
               p.write_text(s)
               print("Patched include/config.h for Android wlan_assistant NVRAM & log path")
+
+          p_init = Path("os/linux/gl_init.c")
+          if p_init.exists():
+              s_init = p_init.read_text()
+              old_reg = "wifi_fwlog_event_func_register(consys_log_event_notification);"
+              new_reg = "wifi_fwlog_event_func_register(consys_log_event_notification);\n\twifi_fwlog_get_fw_ver_register(consys_get_fw_ver_cb);"
+              if old_reg in s_init and "consys_get_fw_ver_cb" not in s_init:
+                  s_init = s_init.replace(old_reg, new_reg)
+                  dummy_cb = """#ifdef CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH
+          extern void wifi_fwlog_get_fw_ver_register(void *);
+          static void consys_get_fw_ver_cb(uint8_t *name, uint32_t *len, uint32_t max_len)
+          {
+              if (len) *len = 0;
+          }
+          #endif
+          """
+                  s_init = dummy_cb + s_init
+                  p_init.write_text(s_init)
+                  print("Patched os/linux/gl_init.c to register wifi_fwlog_get_fw_ver_register")
           PY
 
           echo "=== Fix empty reset module Kbuild issue defensively ==="
