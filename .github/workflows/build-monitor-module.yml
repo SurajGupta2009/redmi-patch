@@ -76,6 +76,23 @@ jobs:
           strings "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/wlan_drv_gen4m.ko" \
             | grep -iE 'radiotap|wlanMon|CFG_SUPPORT_SNIFFER_RADIOTAP|NL80211_IFTYPE_MONITOR' || true
 
+          echo "=== Require cfg80211.ko / mac80211.ko (needed for real CRCs of ==="
+          echo "=== cfg80211_cac_event / cfg80211_radar_event / cfg80211_cqm_*_notify / ==="
+          echo "=== ieee80211_freq_khz_to_channel, which the radiotap-enabled build needs ==="
+          echo "=== but the stock wlan_drv_gen4m.ko never imported) ==="
+          test -f "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/cfg80211.ko" || {
+            echo "ERROR: cfg80211.ko missing from ${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/"
+            echo "ERROR: pull it from the device first, see README-FULL-PROCESS.md step 0."
+            exit 1
+          }
+          test -f "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/mac80211.ko" || {
+            echo "ERROR: mac80211.ko missing from ${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/"
+            echo "ERROR: pull it from the device first, see README-FULL-PROCESS.md step 0."
+            exit 1
+          }
+          file "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/cfg80211.ko"
+          file "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/mac80211.ko"
+
       - name: Clone Xiaomi kernel and MTK modules
         run: |
           set -euxo pipefail
@@ -299,6 +316,147 @@ jobs:
           echo "=== Verify wake-lock patch applied ==="
           grep -n "Redmi spark: forced off" os/linux/include/gl_kal.h
 
+          echo "=== Avoid vmlinux-only symbols with no CRC anywhere in our stock ==="
+          echo "=== extraction: napi_complete_done, skb_queue_purge, sched_set_fifo_low. ==="
+          echo "=== These are exported by net/core/dev.c, net/core/skbuff.c, and ==="
+          echo "=== kernel/sched/core.c directly (not any loadable .ko), so there is no ==="
+          echo "=== stock module we can scrape a real CRC from, and building vmlinux to ==="
+          echo "=== get one is what caused the earlier 'LTO vmlinux.o' CI timeout. Stock's ==="
+          echo "=== own build never needed these symbols (verified: none of them appear ==="
+          echo "=== anywhere in the stock wlan_drv_gen4m.ko), so we take the same code ==="
+          echo "=== paths stock takes instead of forcing new vmlinux dependencies."
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          # 1) napi_complete_done: kal_napi_complete_done() calls it directly on
+          #    kernel >= 3.19 (our kernel is 5.10.198), and napi_complete() on
+          #    older kernels is *also* just a static-inline wrapper around
+          #    napi_complete_done() in <linux/netdevice.h> -- so there is no
+          #    version-gate escape here, only avoiding the whole NAPI-poll path
+          #    works. Stock's own build takes CFG_SUPPORT_RX_GRO's "direct GRO"
+          #    path (kal_gro_flush(), no napi_complete_done at all) -- confirmed
+          #    by the stock .ko containing zero occurrences of kalNapiInit /
+          #    kalNapiPoll / kal_napi_complete_done. CFG_SUPPORT_RX_NAPI already
+          #    defaults to 0 and we never set CONFIG_SUPPORT_RX_NAPI=y, so the
+          #    actual difference is CFG_SUPPORT_RX_GRO itself: force it to 0 to
+          #    match stock's compiled code path exactly.
+          p = Path("include/config.h")
+          s = p.read_text()
+
+          old = "#define CFG_SUPPORT_RX_GRO                      1"
+          new = (
+              "/* Redmi spark: forced off. napi_complete_done has zero CRC coverage\n"
+              " * anywhere in our stock module extraction (it is a vmlinux-only\n"
+              " * export, net/core/dev.c) and napi_complete() on this kernel is just\n"
+              " * a static-inline wrapper around napi_complete_done() -- so no\n"
+              " * kernel-version gate can avoid it once this path is compiled in.\n"
+              " * The stock module's own build never enables this path (confirmed:\n"
+              " * stock .ko contains zero kalNapiInit/kalNapiPoll/kal_napi_complete_done\n"
+              " * symbols), so we match stock instead of requiring a full vmlinux\n"
+              " * build just to get one extra CRC.\n"
+              " */\n"
+              "#define CFG_SUPPORT_RX_GRO                      0"
+          )
+
+          n = s.count(old)
+          if n != 1:
+              raise SystemExit(
+                  f"ERROR: expected exactly 1 occurrence of CFG_SUPPORT_RX_GRO define, found {n}")
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("patched CFG_SUPPORT_RX_GRO=0 (matches stock's compiled RX path)")
+          PY
+
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          # 2) skb_queue_purge: only reachable via CFG_ASSERT_DUMP's firmware-dump
+          #    debug skb queue (wlanNetCreate/wlanNetDestroy). Stock's own build
+          #    never calls it either (confirmed: stock .ko has zero occurrences),
+          #    even though CFG_ASSERT_DUMP is unconditionally 1 in config.h --
+          #    the two callsites are trivially skippable without touching the
+          #    surrounding waitqueue/skb_queue_head_init init logic, which stock
+          #    clearly keeps (rFwDumpSkbQueue is still declared/initialized).
+          #    We only drop the purge-on-destroy call itself, which just leaks
+          #    at most a few queued debug skbs, if any, during device teardown --
+          #    a Magisk-module-overlay wlan_drv_gen4m.ko is never actually
+          #    rmmod'd in normal operation, so this path is not exercised anyway.
+          p = Path("os/linux/gl_init.c")
+          s = p.read_text()
+
+          old = "\tskb_queue_purge(&(prGlueInfo->rFwDumpSkbQueue));"
+          new = (
+              "\t/* Redmi spark: skb_queue_purge has zero CRC coverage anywhere in\n"
+              "\t * our stock module extraction (vmlinux-only export,\n"
+              "\t * net/core/skbuff.c). Stock's own build never calls it either\n"
+              "\t * (confirmed: zero occurrences in stock wlan_drv_gen4m.ko), so we\n"
+              "\t * skip it here too instead of requiring a full vmlinux build for\n"
+              "\t * one extra CRC. This only affects module teardown, which never\n"
+              "\t * happens for a Magisk overlay module in normal operation.\n"
+              "\t */"
+          )
+
+          n = s.count(old)
+          if n != 1:
+              raise SystemExit(
+                  f"ERROR: expected exactly 1 occurrence of skb_queue_purge callsite, found {n}")
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("patched out skb_queue_purge call (matches stock's compiled behavior)")
+          PY
+
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          # 3) sched_set_fifo_low: only reached via kal_sched_set()'s "else"
+          #    branch on kernel >= 5.9 when policy != SCHED_NORMAL/SCHED_FIFO.
+          #    Stock's own build never calls kal_sched_set/kalSetThreadSchPolicyPriority
+          #    at all (confirmed: zero occurrences in stock .ko) -- it uses
+          #    sched_setattr() directly elsewhere, which *does* have a valid CRC
+          #    in stock's own wlan_drv_gen4m.ko. Route this fallback branch
+          #    through sched_setattr() too (SCHED_FIFO with the same "low"
+          #    priority=1 the kernel's own sched_set_fifo_low() would have used)
+          #    instead of calling the uncovered symbol directly.
+          p = Path("os/linux/gl_kal.c")
+          s = p.read_text()
+
+          old = "\telse\n\t\tsched_set_fifo_low(p);"
+          new = (
+              "\telse {\n"
+              "\t\t/* Redmi spark: sched_set_fifo_low has zero CRC coverage anywhere\n"
+              "\t\t * in our stock module extraction (vmlinux-only export,\n"
+              "\t\t * kernel/sched/core.c). Stock's own build never calls\n"
+              "\t\t * kal_sched_set() at all (confirmed: zero occurrences in stock\n"
+              "\t\t * .ko) and uses sched_setattr() directly instead, which does\n"
+              "\t\t * have a valid CRC in stock's own wlan_drv_gen4m.ko. Reproduce\n"
+              "\t\t * sched_set_fifo_low()'s exact behavior (SCHED_FIFO, priority 1)\n"
+              "\t\t * through that already-covered symbol instead.\n"
+              "\t\t */\n"
+              "\t\tstruct sched_attr redmi_spark_low_attr = {\n"
+              "\t\t\t.sched_policy = SCHED_FIFO,\n"
+              "\t\t\t.sched_priority = 1,\n"
+              "\t\t};\n"
+              "\t\tsched_setattr(p, &redmi_spark_low_attr);\n"
+              "\t}"
+          )
+
+          n = s.count(old)
+          if n != 1:
+              raise SystemExit(
+                  f"ERROR: expected exactly 1 occurrence of sched_set_fifo_low callsite, found {n}")
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("patched sched_set_fifo_low callsite to use sched_setattr (matches stock's own symbol usage)")
+          PY
+
+          echo "=== Verify all three avoidance patches applied ==="
+          grep -n "Redmi spark: forced off. napi_complete_done" include/config.h
+          grep -n "Redmi spark: skb_queue_purge has zero CRC" os/linux/gl_init.c
+          grep -n "Redmi spark: sched_set_fifo_low has zero CRC" os/linux/gl_kal.c
+
       - name: Apply hard ABI fixes for symbols that failed on device
         run: |
           set -euxo pipefail
@@ -514,6 +672,8 @@ jobs:
               return bytes(data)
 
           def parse_modversions(ko: Path):
+              """Parse CRCs for symbols this module IMPORTS (its __versions
+              section, i.e. what it needs from other modules/vmlinux)."""
               data = read_versions_section(ko)
               result = {}
 
@@ -537,9 +697,69 @@ jobs:
 
               return result
 
+          def parse_own_kcrctab(ko: Path):
+              """Parse CRCs for symbols this module itself EXPORTS.
+
+              FIX (round 2): the previous version of this scraper only ever
+              read each stock .ko's __versions section (what it imports),
+              never what it exports. That meant a real, correct, on-device
+              CRC like __crc_mtk_wcn_wmt_assert_timeout=0xa68d984a sitting
+              right inside wmt_drv.ko's own symbol table was never picked up,
+              because no *other* stock module happens to import that symbol.
+              Reading each module's own __crc_<name> ABS symbols closes that
+              gap and recovers real CRCs for mtk_wcn_wmt_assert_timeout,
+              gConEmiPhyBase, and gConEmiSize (see also the self-export-filter
+              fix below, which was wrongly discarding the latter two).
+              """
+              try:
+                  text = subprocess.check_output(
+                      ["readelf", "-sW", str(ko)],
+                      text=True,
+                      stderr=subprocess.DEVNULL,
+                  )
+              except subprocess.CalledProcessError:
+                  return {}
+
+              result = {}
+              for line in text.splitlines():
+                  parts = line.split()
+                  if len(parts) < 8:
+                      continue
+                  ndx, name = parts[-2], parts[-1]
+                  if ndx == "ABS" and name.startswith("__crc_"):
+                      try:
+                          crc = int(parts[1], 16) & 0xFFFFFFFF
+                      except ValueError:
+                          continue
+                      if crc != 0:
+                          result[name[len("__crc_"):]] = crc
+              return result
+
           def find_self_exports():
+              """Find symbols the patched wlan source itself EXPORT_SYMBOL()s,
+              so we never let a self-export's own CRC leak into the CRC
+              database we build the module against (that caused an earlier
+              modpost failure via a self-exported Get_Camera_Temperature).
+
+              FIX (round 2): skip EXPORT_SYMBOL calls that live entirely
+              inside a "#if defined(UT_TEST_MODE) && defined(CFG_BUILD_X86_PLATFORM)"
+              guard. That combination is unconditionally undefined on our
+              real Android/arm64 CONNAC build (gen4-mt79xx/Makefile does
+              "WLAN_CHIP_LIST := ... -UUT_TEST_MODE" and our
+              MTK_COMBO_CHIP=CONNAC never re-adds it), so it is dead code
+              that never actually compiles -- but the previous filter matched
+              it as plain text regardless of surrounding #if guards, and
+              wrongly stripped the real, valid, already-scraped CRCs for
+              gConEmiPhyBase/gConEmiSize (which stock actually gets from
+              wmt_drv.ko, not from this dead code) right back out again.
+              """
               exports = set()
               rex = re.compile(r"\bEXPORT_SYMBOL(?:_GPL)?(?:_NS)?\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)", re.S)
+              dead_guard = re.compile(
+                  r"#if\s+defined\(UT_TEST_MODE\)\s*&&\s*defined\(CFG_BUILD_X86_PLATFORM\)"
+                  r".*?#endif",
+                  re.S,
+              )
 
               for p in wlan_src.rglob("*"):
                   if p.suffix not in [".c", ".h"]:
@@ -548,10 +768,15 @@ jobs:
                       text = p.read_text(errors="ignore")
                   except Exception:
                       continue
-                  for m in rex.finditer(text):
+                  # Strip dead UT_TEST_MODE/X86-only blocks before searching,
+                  # so EXPORT_SYMBOL calls that only exist in code that never
+                  # compiles for our build are not falsely flagged.
+                  stripped = dead_guard.sub("", text)
+                  for m in rex.finditer(stripped):
                       exports.add(m.group(1))
 
-              # Explicit self-export seen in earlier modpost failure.
+              # Explicit self-export seen in an earlier modpost failure.
+              # This one is real (not inside any dead #if guard), keep it.
               exports.add("Get_Camera_Temperature")
               return exports
 
@@ -561,9 +786,20 @@ jobs:
 
           versions = parse_modversions(stock_wlan)
 
-          # Fill extra CRCs from all other stock modules.
+          # Fill extra CRCs from what all other stock modules IMPORT.
           for ko in sorted(stock_dir.glob("*.ko")):
               for name, crc in parse_modversions(ko).items():
+                  versions.setdefault(name, crc)
+
+          # FIX (round 2): also fill CRCs from what each stock module itself
+          # EXPORTS. This is what recovers mtk_wcn_wmt_assert_timeout,
+          # gConEmiPhyBase, and gConEmiSize from wmt_drv.ko's own symbol
+          # table, none of which any *other* stock module happens to import.
+          recovered_from_own_exports = {}
+          for ko in sorted(stock_dir.glob("*.ko")):
+              for name, crc in parse_own_kcrctab(ko).items():
+                  if name not in versions:
+                      recovered_from_own_exports[name] = (ko.name, crc)
                   versions.setdefault(name, crc)
 
           if "module_layout" not in versions:
@@ -587,9 +823,24 @@ jobs:
 
           print(f"Wrote {len(versions)} CRCs")
           print(f"module_layout=0x{versions['module_layout']:08x}")
+          print()
+          print(f"Recovered {len(recovered_from_own_exports)} CRCs from stock modules' own export tables:")
+          for name, (ko_name, crc) in sorted(recovered_from_own_exports.items()):
+              print(f"  0x{crc:08x} {name} (exported by {ko_name})")
+          print()
           print(f"Removed {len(removed)} self-export CRCs")
           for name, crc in list(sorted(removed.items()))[:50]:
               print(f"removed self export: 0x{crc:08x} {name}")
+
+          # Sanity check: the two bugs fixed in this revision should now be
+          # resolved. Fail loudly and early if they somehow are not, rather
+          # than finding out from a modpost warning again.
+          expected_recovered = ["gConEmiPhyBase", "gConEmiSize", "mtk_wcn_wmt_assert_timeout"]
+          still_missing = [s for s in expected_recovered if s not in versions]
+          if still_missing:
+              raise SystemExit(
+                  "ERROR: expected these symbols to be recoverable from stock "
+                  f"modules' own export tables, but they are still missing: {still_missing}")
           PY
 
           test -s "${BUILD_DIR}/stock-crc/Module.symvers"
@@ -602,6 +853,129 @@ jobs:
             echo "ERROR: self-export leaked into Module.symvers"
             exit 1
           fi
+
+          echo "=== Merge in cfg80211.ko / mac80211.ko CRCs (imports + own exports) ==="
+          echo "=== These cover cfg80211_cac_event, cfg80211_radar_event, ==="
+          echo "=== cfg80211_cqm_rssi_notify, cfg80211_cqm_txe_notify, and ==="
+          echo "=== ieee80211_freq_khz_to_channel, which the radiotap-enabled build ==="
+          echo "=== needs but the stock wlan_drv_gen4m.ko never imported, so no ==="
+          echo "=== other stock .ko has their CRCs -- only cfg80211.ko/mac80211.ko ==="
+          echo "=== themselves (pulled from the device, see README) do."
+          python3 - <<'PY'
+          import os
+          import re
+          import struct
+          import subprocess
+          from pathlib import Path
+
+          build_dir = Path(os.environ["BUILD_DIR"])
+          workspace = Path(os.environ["GITHUB_WORKSPACE"])
+          stock_dir = workspace / os.environ["STOCK_EXTRACT_DIR"] / "modules_vendor_lib_modules"
+          symvers_path = build_dir / "kernel_spark" / "out" / "Module.symvers"
+          stock_symvers_path = build_dir / "stock-crc" / "Module.symvers"
+
+          def read_versions_section(ko):
+              try:
+                  text = subprocess.check_output(
+                      ["readelf", "-x", "__versions", str(ko)],
+                      text=True, stderr=subprocess.DEVNULL)
+              except subprocess.CalledProcessError:
+                  return b""
+              data = bytearray()
+              for line in text.splitlines():
+                  m = re.match(r"\s*0x[0-9a-fA-F]+\s+((?:[0-9a-fA-F]{8}\s*){1,4})", line)
+                  if not m:
+                      continue
+                  for word in m.group(1).split():
+                      data.extend(bytes.fromhex(word))
+              return bytes(data)
+
+          def parse_modversions(ko):
+              data = read_versions_section(ko)
+              result = {}
+              for off in range(0, len(data) - 64 + 1, 64):
+                  rec = data[off:off + 64]
+                  crc = struct.unpack("<I", rec[:4])[0]
+                  raw = rec[8:].split(b"\x00", 1)[0]
+                  if not raw or crc == 0:
+                      continue
+                  try:
+                      name = raw.decode("ascii")
+                  except UnicodeDecodeError:
+                      continue
+                  if re.match(r"^[A-Za-z0-9_.]+$", name):
+                      result[name] = crc
+              return result
+
+          def parse_own_kcrctab(ko):
+              try:
+                  text = subprocess.check_output(
+                      ["readelf", "-sW", str(ko)],
+                      text=True, stderr=subprocess.DEVNULL)
+              except subprocess.CalledProcessError:
+                  return {}
+              result = {}
+              for line in text.splitlines():
+                  parts = line.split()
+                  if len(parts) < 8:
+                      continue
+                  ndx, name = parts[-2], parts[-1]
+                  if ndx == "ABS" and name.startswith("__crc_"):
+                      try:
+                          crc = int(parts[1], 16) & 0xFFFFFFFF
+                      except ValueError:
+                          continue
+                      if crc != 0:
+                          result[name[len("__crc_"):]] = crc
+              return result
+
+          existing_lines = symvers_path.read_text().splitlines()
+          existing_names = set()
+          for line in existing_lines:
+              parts = line.split("\t")
+              if len(parts) >= 2:
+                  existing_names.add(parts[1])
+
+          added = {}
+          for ko_name in ["cfg80211.ko", "mac80211.ko"]:
+              ko = stock_dir / ko_name
+              if not ko.exists():
+                  raise SystemExit(f"ERROR: {ko} not found (should have been checked earlier)")
+              merged = {}
+              merged.update(parse_modversions(ko))
+              merged.update(parse_own_kcrctab(ko))
+              for name, crc in merged.items():
+                  if name not in existing_names:
+                      added[name] = (ko_name, crc)
+                      existing_names.add(name)
+
+          new_lines = list(existing_lines)
+          for name, (ko_name, crc) in sorted(added.items()):
+              new_lines.append(f"0x{crc:08x}\t{name}\tvmlinux\tEXPORT_SYMBOL\t")
+
+          text = "\n".join(new_lines) + "\n"
+          symvers_path.write_text(text)
+          stock_symvers_path.write_text(text)
+
+          print(f"Added {len(added)} CRCs from cfg80211.ko/mac80211.ko:")
+          for name, (ko_name, crc) in sorted(added.items()):
+              print(f"  0x{crc:08x} {name} (from {ko_name})")
+
+          expected = [
+              "cfg80211_cac_event", "cfg80211_radar_event",
+              "cfg80211_cqm_rssi_notify", "cfg80211_cqm_txe_notify",
+              "ieee80211_freq_khz_to_channel",
+          ]
+          still_missing = [s for s in expected if s not in existing_names]
+          if still_missing:
+              raise SystemExit(
+                  f"ERROR: expected these symbols from cfg80211.ko/mac80211.ko "
+                  f"but they are still missing after merge: {still_missing}")
+          print("OK: all expected cfg80211/mac80211 symbols now have CRC coverage.")
+          PY
+
+          echo "=== Module.symvers sample after cfg80211/mac80211 merge ==="
+          tail -20 "${BUILD_DIR}/kernel_spark/out/Module.symvers"
 
       - name: Build patched wlan_drv_gen4m.ko
         run: |
