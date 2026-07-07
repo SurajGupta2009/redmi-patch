@@ -197,18 +197,17 @@ jobs:
           if p_init.exists():
               s_init = p_init.read_text()
               old_reg = "wifi_fwlog_event_func_register(consys_log_event_notification);"
-              new_reg = "wifi_fwlog_event_func_register(consys_log_event_notification);\n\twifi_fwlog_get_fw_ver_register(consys_get_fw_ver_cb);"
+              new_reg = "wifi_fwlog_event_func_register(consys_log_event_notification);\n\twifi_fwlog_get_fw_ver_register((void *)consys_get_fw_ver_cb);"
               if old_reg in s_init and "consys_get_fw_ver_cb" not in s_init:
                   s_init = s_init.replace(old_reg, new_reg)
-                  dummy_cb = """#ifdef CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH
+                  dummy_cb = """
           extern void wifi_fwlog_get_fw_ver_register(void *);
-          static void consys_get_fw_ver_cb(uint8_t *name, uint32_t *len, uint32_t max_len)
+          static void consys_get_fw_ver_cb(unsigned char *name, unsigned int *len, unsigned int max_len)
           {
               if (len) *len = 0;
           }
-          #endif
-          """
-                  s_init = dummy_cb + s_init
+          static void consys_log_event_notification("""
+                  s_init = s_init.replace("static void consys_log_event_notification(", dummy_cb)
                   p_init.write_text(s_init)
                   print("Patched os/linux/gl_init.c to register wifi_fwlog_get_fw_ver_register")
           PY
