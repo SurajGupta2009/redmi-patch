@@ -1101,12 +1101,19 @@ jobs:
 
           echo "=== Cross-check every UND symbol has a real CRC in __versions section ==="
           python3 - <<'PY'
+          import os
           import re
           import subprocess
           import struct
           import sys
 
-          ko = "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko"
+          # NOTE: this heredoc uses a QUOTED delimiter (<<'PY'), so bash does
+          # NOT expand ${GITHUB_WORKSPACE} inside it -- that caused a real CI
+          # failure ("readelf: Error: '${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko':
+          # No such file") because the literal unexpanded string was passed to
+          # readelf. Read it from the environment in Python instead, exactly
+          # like the other python blocks in this workflow already do.
+          ko = os.path.join(os.environ["GITHUB_WORKSPACE"], "wlan_drv_gen4m.ko")
 
           und = set()
           for line in subprocess.check_output(["readelf", "-sW", ko], text=True).splitlines():
