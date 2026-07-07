@@ -1,0 +1,1049 @@
+name: Build Redmi Spark wlan_drv_gen4m.ko Radiotap Monitor [v11.0]
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+
+    env:
+      BUILD_DIR: /home/runner/redmi_monitor_build
+      KERNEL_BRANCH: spark-s-oss
+      STOCK_EXTRACT_DIR: redmi_wifi_stack_extract
+      TARGET_VERMAGIC: "5.10.198-android12-9+ SMP preempt mod_unload modversions aarch64"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install host packages
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            git bc bison flex make python3 \
+            libssl-dev libelf-dev dwarves build-essential \
+            unzip rsync cpio xz-utils zip file curl ca-certificates \
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
+
+      - name: Cache Android clang r416183b
+        id: cache-clang
+        uses: actions/cache@v4
+        with:
+          path: ~/toolchains/clang
+          key: android-clang-r416183b-linux-x86-v2
+
+      - name: Install Android clang r416183b
+        if: steps.cache-clang.outputs.cache-hit != 'true'
+        run: |
+          set -euxo pipefail
+          mkdir -p "${HOME}/toolchains/clang"
+          CLANG_ARCHIVE="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz"
+          if curl -fL "${CLANG_ARCHIVE}" -o /tmp/clang-r416183b.tar.gz; then
+            tar -xzf /tmp/clang-r416183b.tar.gz -C "${HOME}/toolchains/clang"
+          else
+            echo "Archive download failed, falling back to AOSP clone"
+            git clone --depth=1 -b android12-release \
+              https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 \
+              /tmp/aosp-clang
+            CLANG_DIR="$(find /tmp/aosp-clang -maxdepth 1 -type d -name 'clang-r416183*' | head -n 1)"
+            test -n "${CLANG_DIR}"
+            rsync -a "${CLANG_DIR}/" "${HOME}/toolchains/clang/"
+          fi
+          "${HOME}/toolchains/clang/bin/clang" --version
+
+      - name: Verify stock extraction
+        run: |
+          set -euxo pipefail
+          test -f "${STOCK_EXTRACT_DIR}/kernel_config.txt"
+          test -f "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/wlan_drv_gen4m.ko"
+          echo "=== Stock wlan module ==="
+          file "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/wlan_drv_gen4m.ko"
+          strings "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/wlan_drv_gen4m.ko" | grep '^vermagic='
+          echo "=== Stock should not contain radiotap monitor strings ==="
+          strings "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/wlan_drv_gen4m.ko" \
+            | grep -iE 'radiotap|wlanMon|CFG_SUPPORT_SNIFFER_RADIOTAP|NL80211_IFTYPE_MONITOR' || true
+          test -f "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/cfg80211.ko" || {
+            echo "ERROR: cfg80211.ko missing"
+            exit 1
+          }
+          test -f "${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/mac80211.ko" || {
+            echo "ERROR: mac80211.ko missing"
+            exit 1
+          }
+
+      - name: Clone Xiaomi kernel and MTK modules
+        run: |
+          set -euxo pipefail
+          rm -rf "${BUILD_DIR}"
+          mkdir -p "${BUILD_DIR}"
+          git clone --depth=1 --branch "${KERNEL_BRANCH}" \
+            https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git \
+            "${BUILD_DIR}/kernel_spark"
+          git clone --depth=1 --branch "${KERNEL_BRANCH}" \
+            https://github.com/MiCode/MTK_kernel_modules.git \
+            "${BUILD_DIR}/vendor/mediatek/kernel_modules"
+          cd "${BUILD_DIR}/vendor/mediatek/kernel_modules/connectivity/wlan/core"
+          ln -sfn gen4-mt79xx gen4m
+
+      - name: Patch wlan source for Redmi spark radiotap build
+        run: |
+          set -euxo pipefail
+          WLAN="${BUILD_DIR}/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx"
+          cd "${WLAN}"
+
+          echo "=== Force radiotap monitor support in Makefile ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("Makefile")
+          s = p.read_text()
+          old = """ifeq ($(CONFIG_SUPPORT_SNIFFER_RADIOTAP), y)
+ ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1
+ ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=1
+ else
+ ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=0
+ ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=0
+ endif"""
+          new = """# Redmi Pad SE 8.7 4G spark monitor-mode build (v11.0)
+ ccflags-y += -DCFG_SUPPORT_SNIFFER_RADIOTAP=1
+ ccflags-y += -DCFG_SUPPORT_PDMA_SCATTER=0"""
+          if old in s:
+              s = s.replace(old, new)
+          else:
+              s += "\n" + new + "\n"
+          p.write_text(s)
+          PY
+
+          echo "=== Patch include/config.h: radiotap, NVRAM, fwlog, persist-netdev ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("include/config.h")
+          s = p.read_text()
+
+          # 1) CFG_SUPPORT_SNIFFER_RADIOTAP: config.h overrides Makefile -D, so we must fix it here
+          s = re.sub(r"#undef\s+CFG_SUPPORT_SNIFFER_RADIOTAP", "#define CFG_SUPPORT_SNIFFER_RADIOTAP 1", s)
+          s = re.sub(r"#define\s+CFG_SUPPORT_SNIFFER_RADIOTAP\s+0", "#define CFG_SUPPORT_SNIFFER_RADIOTAP 1", s)
+
+          # 2) CFG_WLAN_ASSISTANT_NVRAM: required so Android's wlan_assistant doesn't 200s deadlock
+          s = re.sub(r"#define\s+CFG_WLAN_ASSISTANT_NVRAM\s+0", "#define CFG_WLAN_ASSISTANT_NVRAM 1", s)
+
+          # 3) CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH: required for fwlog callback registration
+          s = re.sub(r"#undef\s+CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH", "#define CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH 1", s)
+
+          # 4) CFG_SUPPORT_PERSIST_NETDEV: must be 0 so prGlueInfo exists before NVRAM handler runs
+          s = re.sub(r"#define\s+CFG_SUPPORT_PERSIST_NETDEV\s+1", "#define CFG_SUPPORT_PERSIST_NETDEV 0", s)
+          # If it was undefined or set differently, force it
+          if "CFG_SUPPORT_PERSIST_NETDEV" not in s:
+              s += "\n#define CFG_SUPPORT_PERSIST_NETDEV 0\n"
+          else:
+              s = re.sub(r"#undef\s+CFG_SUPPORT_PERSIST_NETDEV", "#define CFG_SUPPORT_PERSIST_NETDEV 0", s)
+
+          p.write_text(s)
+          print("Patched include/config.h for radiotap=1, NVRAM=1, log_path=1, persist_netdev=0")
+          PY
+
+          echo "=== Register fwlog get_fw_ver callback AFTER all includes in gl_init.c ==="
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p_init = Path("os/linux/gl_init.c")
+          s_init = p_init.read_text()
+
+          # Only patch once
+          if "consys_get_fw_ver_cb" in s_init:
+              print("consys_get_fw_ver_cb already present; skipping")
+          else:
+              lines = s_init.splitlines()
+              # Find last #include line
+              last_include_idx = -1
+              for i, line in enumerate(lines):
+                  if line.strip().startswith("#include"):
+                      last_include_idx = i
+              if last_include_idx < 0:
+                  raise SystemExit("Could not find any #include in gl_init.c")
+
+              callback_block = [
+                  "",
+                  "/* Redmi spark v11.0: dummy fwlog version callback (injected after all includes) */",
+                  "#ifdef CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH",
+                  "extern void wifi_fwlog_get_fw_ver_register(void *);",
+                  "static void consys_get_fw_ver_cb(unsigned char *name, unsigned int *len, unsigned int max_len)",
+                  "{",
+                  "    if (len) *len = 0;",
+                  "}",
+                  "#endif",
+              ]
+
+              lines = lines[:last_include_idx+1] + callback_block + lines[last_include_idx+1:]
+              s_init = "\n".join(lines)
+
+              old_reg = "wifi_fwlog_event_func_register(consys_log_event_notification);"
+              new_reg = (
+                  "wifi_fwlog_event_func_register(consys_log_event_notification);\n"
+                  "\twifi_fwlog_get_fw_ver_register((void *)consys_get_fw_ver_cb);"
+              )
+              if old_reg not in s_init:
+                  raise SystemExit("Could not find wifi_fwlog_event_func_register call site")
+              s_init = s_init.replace(old_reg, new_reg, 1)
+              p_init.write_text(s_init)
+              print("Patched os/linux/gl_init.c with robust consys_get_fw_ver_cb placement")
+          PY
+
+          echo "=== Keep GKI support enabled, but disable separate reset KO path ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("Makefile")
+          s = p.read_text()
+          s = re.sub(r"^CONFIG_GKI_SUPPORT\s*=.*$", "CONFIG_GKI_SUPPORT=y", s, flags=re.M)
+          s = s.replace("ccflags-y += -DCFG_CHIP_RESET_KO_SUPPORT",
+                        "# Redmi spark: disabled external reset KO support for AXI build")
+          s = s.replace("RESET_OBJS := reset/reset.o",
+                        "# Redmi spark: RESET_OBJS disabled for AXI")
+          s = s.replace("$(MODULE_NAME_RESET)-objs += $(RESET_OBJS)",
+                        "# Redmi spark: MODULE_NAME_RESET objs disabled for AXI")
+          s = s.replace("obj-m += $(MODULE_NAME_RESET).o",
+                        "# Redmi spark: MODULE_NAME_RESET obj-m disabled for AXI")
+          p.write_text(s)
+          PY
+
+          echo "=== Fix empty reset module Kbuild issue defensively ==="
+          sed -i \
+            -e 's/\$(MODULE_NAME_RESET)-objs += \$(RESET_OBJS)/ifneq (\$(MODULE_NAME_RESET),)\n\$(MODULE_NAME_RESET)-objs += \$(RESET_OBJS)/' \
+            -e 's/obj-m += \$(MODULE_NAME_RESET)\.o/obj-m += \$(MODULE_NAME_RESET).o\nendif/' \
+            Makefile || true
+
+          echo "=== Disable Werror and add Clang-safe warning suppressions ==="
+          sed -i 's/-Werror/-Wno-error/g' Makefile
+          cat >> Makefile <<'EOF'
+
+# Redmi spark CI warning suppressions
+ccflags-y += -Wno-error
+ccflags-y += -Wno-unknown-warning-option
+ccflags-y += -Wno-implicit-function-declaration
+ccflags-y += -Wno-incompatible-pointer-types
+ccflags-y += -Wno-int-conversion
+ccflags-y += -Wno-unused-function
+ccflags-y += -Wno-unused-variable
+ccflags-y += -Wno-unused-but-set-variable
+ccflags-y += -Wno-misleading-indentation
+ccflags-y += -Wno-address-of-packed-member
+ccflags-y += -Wno-format
+ccflags-y += -Wno-missing-prototypes
+ccflags-y += -Wno-pointer-sign
+EOF
+
+          echo "=== Patch halIsHifStateReady for AXI ==="
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          p = Path("os/linux/hif/common/hal_pdma.c")
+          s = p.read_text()
+          pattern = r"bool\s+halIsHifStateReady\s*\(.*?\)\s*\{.*?\n\}"
+          replacement = """bool halIsHifStateReady(IN struct ADAPTER *prAdapter, uint8_t *pucState)
+{
+	if (!prAdapter || !prAdapter->prGlueInfo || prAdapter->prGlueInfo->u4ReadyFlag == 0)
+		return FALSE;
+
+#if defined(_HIF_PCIE)
+	if (pucState)
+		*pucState = prAdapter->prGlueInfo->rHifInfo.eSuspendtate;
+
+	if (prAdapter->prGlueInfo->rHifInfo.eSuspendtate == PCIE_STATE_SUSPEND_ENTERING)
+		return FALSE;
+#else
+	if (pucState)
+		*pucState = 0;
+#endif
+
+	return TRUE;
+}"""
+          ns = re.sub(pattern, replacement, s, count=1, flags=re.S)
+          if ns != s:
+              p.write_text(ns)
+              print("patched halIsHifStateReady")
+          else:
+              print("halIsHifStateReady pattern not found or already patched")
+          PY
+
+          echo "=== Patch AXI legacy timer API ==="
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          p = Path("os/linux/hif/axi/axi.c")
+          s = p.read_text()
+          pattern = (
+              r"init_timer\(&prHif->rSerTimer\);\s*"
+              r"prHif->rSerTimer\.function\s*=\s*halHwRecoveryTimeout;\s*"
+              r"prHif->rSerTimer\.data\s*=\s*\(unsigned long\)prGlueInfo;\s*"
+              r"prHif->rSerTimer\.expires\s*=\s*jiffies\s*\+\s*HIF_SER_TIMEOUT\s*\*\s*HZ\s*/\s*MSEC_PER_SEC;"
+          )
+          replacement = """#if KERNEL_VERSION(4, 15, 0) <= LINUX_VERSION_CODE
+	timer_setup(&prHif->rSerTimer, halHwRecoveryTimeout, 0);
+#else
+	init_timer(&prHif->rSerTimer);
+	prHif->rSerTimer.function = halHwRecoveryTimeout;
+	prHif->rSerTimer.data = (unsigned long)prGlueInfo;
+	prHif->rSerTimer.expires =
+		jiffies + HIF_SER_TIMEOUT * HZ / MSEC_PER_SEC;
+#endif"""
+          ns = re.sub(pattern, replacement, s, count=1, flags=re.S)
+          if ns != s:
+              p.write_text(ns)
+              print("patched AXI timer API")
+          else:
+              print("AXI timer pattern not found or already patched")
+          PY
+
+          echo "=== Remove moved debug hooks from chip structs ==="
+          find chips/ -type f -name "*.c" -exec \
+            sed -i '/\.show_mcu_debug_info\s*=\s*NULL/d; /\.show_conninfra_debug_info\s*=\s*NULL/d' {} +
+
+          echo "=== Force wake-lock macros onto wakeup_source_register/unregister ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("os/linux/include/gl_kal.h")
+          s = p.read_text()
+          old = "#if (KERNEL_VERSION(5, 1, 0) <= LINUX_VERSION_CODE)"
+          new = (
+              "/* Redmi spark: forced off. wakeup_source_add/remove (the >=5.1 path)\n"
+              " * have no CRC in our stock-derived Module.symvers (stock module never\n"
+              " * calls them), which silently loaded as an unversioned symbol and left\n"
+              " * the driver stuck forever in \"Wi-Fi driver is not ready\". Falling\n"
+              " * through to the wakeup_source_register/unregister path instead, which\n"
+              " * matches what the stock module actually uses.\n"
+              " */\n"
+              "#if 0 && (KERNEL_VERSION(5, 1, 0) <= LINUX_VERSION_CODE)"
+          )
+          n = s.count(old)
+          if n != 1:
+              raise SystemExit(f"ERROR: expected exactly 1 occurrence of wake-lock version gate, found {n}")
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("patched wake-lock macros to force wakeup_source_register/unregister path")
+          PY
+
+          echo "=== Avoid vmlinux-only symbols with no CRC ==="
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          p = Path("include/config.h")
+          s = p.read_text()
+          old = "#define CFG_SUPPORT_RX_GRO 1"
+          new = (
+              "/* Redmi spark: forced off. napi_complete_done has zero CRC coverage\n"
+              " * anywhere in our stock module extraction (it is a vmlinux-only\n"
+              " * export, net/core/dev.c) and napi_complete() on this kernel is just\n"
+              " * a static-inline wrapper around napi_complete_done() -- so no\n"
+              " * kernel-version gate can avoid it once this path is compiled in.\n"
+              " * The stock module's own build never enables this path (confirmed:\n"
+              " * stock .ko contains zero kalNapiInit/kalNapiPoll/kal_napi_complete_done\n"
+              " * symbols), so we match stock instead of requiring a full vmlinux\n"
+              " * build just to get one extra CRC.\n"
+              " */\n"
+              "#define CFG_SUPPORT_RX_GRO 0"
+          )
+          n = s.count(old)
+          if n != 1:
+              raise SystemExit(f"ERROR: expected exactly 1 occurrence of CFG_SUPPORT_RX_GRO define, found {n}")
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("patched CFG_SUPPORT_RX_GRO=0 (matches stock's compiled RX path)")
+          PY
+
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("os/linux/gl_init.c")
+          s = p.read_text()
+          old = "\tskb_queue_purge(&(prGlueInfo->rFwDumpSkbQueue));"
+          new = (
+              "\t/* Redmi spark: skb_queue_purge has zero CRC coverage anywhere in\n"
+              "\t * our stock module extraction (vmlinux-only export,\n"
+              "\t * net/core/skbuff.c). Stock's own build never calls it either\n"
+              "\t * (confirmed: zero occurrences in stock wlan_drv_gen4m.ko), so we\n"
+              "\t * skip it here too instead of requiring a full vmlinux build for\n"
+              "\t * one extra CRC. This only affects module teardown, which never\n"
+              "\t * happens for a Magisk overlay module in normal operation.\n"
+              "\t */"
+          )
+          n = s.count(old)
+          if n != 1:
+              raise SystemExit(f"ERROR: expected exactly 1 occurrence of skb_queue_purge callsite, found {n}")
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("patched out skb_queue_purge call (matches stock's compiled behavior)")
+          PY
+
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("os/linux/gl_kal.c")
+          s = p.read_text()
+          old = "\telse\n\t\tsched_set_fifo_low(p);"
+          new = (
+              "\telse {\n"
+              "\t\t/* Redmi spark: sched_set_fifo_low has zero CRC coverage anywhere\n"
+              "\t\t * in our stock module extraction (vmlinux-only export,\n"
+              "\t\t * kernel/sched/core.c). Stock's own build never calls\n"
+              "\t\t * kal_sched_set() at all (confirmed: zero occurrences in stock\n"
+              "\t\t * .ko) and uses sched_setattr() directly instead, which does\n"
+              "\t\t * have a valid CRC in stock's own wlan_drv_gen4m.ko. Reproduce\n"
+              "\t\t * sched_set_fifo_low()'s exact behavior (SCHED_FIFO, priority 1)\n"
+              "\t\t * through that already-covered symbol instead.\n"
+              "\t\t */\n"
+              "\t\tstruct sched_attr redmi_spark_low_attr = {\n"
+              "\t\t\t.sched_policy = SCHED_FIFO,\n"
+              "\t\t\t.sched_priority = 1,\n"
+              "\t\t};\n"
+              "\t\tsched_setattr(p, &redmi_spark_low_attr);\n"
+              "\t}"
+          )
+          n = s.count(old)
+          if n != 1:
+              raise SystemExit(f"ERROR: expected exactly 1 occurrence of sched_set_fifo_low callsite, found {n}")
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("patched sched_set_fifo_low callsite to use sched_setattr (matches stock's own symbol usage)")
+          PY
+
+          echo "=== Verify all three avoidance patches applied ==="
+          grep -n "Redmi spark: forced off. napi_complete_done" include/config.h
+          grep -n "Redmi spark: skb_queue_purge has zero CRC" os/linux/gl_init.c
+          grep -n "Redmi spark: sched_set_fifo_low has zero CRC" os/linux/gl_kal.c
+
+      - name: Apply hard ABI fixes for symbols that failed on device
+        run: |
+          set -euxo pipefail
+          WLAN="${BUILD_DIR}/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx"
+          cd "${WLAN}"
+
+          echo "=== Disable AXI reserved-prealloc path causing gWifiRsvMem* imports ==="
+          sed -i 's/#define AXI_CFG_PREALLOC_MEMORY_BUFFER[[:space:]]*1/#define AXI_CFG_PREALLOC_MEMORY_BUFFER 0/' \
+            os/linux/hif/axi/include/hif.h
+
+          echo "=== Replace non-exported ioremap_nocache/ioremap_cache with ioremap globally ==="
+          find . -type f \( -name '*.c' -o -name '*.h' \) -exec \
+            sed -i 's/\bioremap_nocache\s*(/ioremap(/g; s/\bioremap_cache\s*(/ioremap(/g' {} +
+
+          echo "=== Disable connectivity_arch_setup_dma_ops dependency ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("os/linux/include/gl_kal.h")
+          s = p.read_text()
+          s = s.replace(
+              "#define KAL_ARCH_SETUP_DMA_OPS(_dev, _base, _size, _iommu, _coherent) \\\\\n\tconnectivity_arch_setup_dma_ops(_dev, _base, _size, _iommu, _coherent)",
+              "#define KAL_ARCH_SETUP_DMA_OPS(_dev, _base, _size, _iommu, _coherent) do { } while (0)"
+          )
+          p.write_text(s)
+          PY
+
+          echo "=== Patch AXI introspection helpers that are not exported on stock kernel ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("os/linux/hif/axi/axi.c")
+          s = p.read_text()
+          s = s.replace("required_mask = dma_get_required_mask(&pdev->dev);",
+                        "required_mask = DMA_BIT_MASK(32);")
+          s = s.replace("dma_ops = get_dma_ops(&pdev->dev);",
+                        "dma_ops = NULL;")
+          s = s.replace("dma_supported(&pdev->dev, dma_mask)",
+                        "1")
+          s = s.replace("connectivity_flush_dcache_area(pucSrc, u4Len);",
+                        "/* Redmi spark: connectivity_flush_dcache_area is not exported */")
+          s = s.replace("platform_device_del(prPlatDev);",
+                        "platform_device_unregister(prPlatDev); prPlatDev = NULL;")
+          p.write_text(s)
+          PY
+
+          echo "=== Remove kalValidateDevHandler callsites that remained unresolved in device logs ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          replacements = {
+              "os/linux/gl_kal.c": [
+                  ("if (!kalValidateDevHandler(prGlueInfo, prCfg80211Req->prDevHandler)) {", "if (FALSE) {"),
+              ],
+              "os/linux/gl_p2p.c": [
+                  ("if (!kalValidateDevHandler(prGlueInfo, prDev)) {", "if (FALSE) {"),
+              ],
+          }
+          for file, reps in replacements.items():
+              p = Path(file)
+              s = p.read_text()
+              for old, new in reps:
+                  s = s.replace(old, new)
+              p.write_text(s)
+          PY
+
+          echo "=== Remove weak set_logtoomuch/get_logtoomuch unresolved risk ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("common/debug.c")
+          s = p.read_text()
+          s = s.replace("get_logtoomuch_enable()", "0")
+          s = s.replace("set_logtoomuch_enable(0);", "/* Redmi spark: set_logtoomuch_enable disabled */")
+          p.write_text(s)
+          PY
+
+          echo "=== Final source check for known bad direct imports ==="
+          grep -R "filp_open\\|kernel_read\\|kernel_write\\|ioremap_nocache\\|ioremap_cache\\|connectivity_flush_dcache_area\\|connectivity_arch_setup_dma_ops\\|dma_get_required_mask\\|get_dma_ops\\|dma_supported\\|platform_device_del\\|rstNotifyWholeChipRstStatus" \
+            -n os/linux common chips include reset || true
+
+      - name: Prepare kernel output tree
+        run: |
+          set -euxo pipefail
+          KERNEL_DIR="${BUILD_DIR}/kernel_spark"
+          OUT_DIR="${KERNEL_DIR}/out"
+          CONFIG_SRC="${GITHUB_WORKSPACE}/${STOCK_EXTRACT_DIR}/kernel_config.txt"
+          CONFIG_DST="${OUT_DIR}/.config"
+
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export LLVM=1
+          export LLVM_IAS=1
+          export PATH="${HOME}/toolchains/clang/bin:${PATH}"
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+
+          mkdir -p "${OUT_DIR}"
+          cp "${CONFIG_SRC}" "${CONFIG_DST}"
+          cd "${KERNEL_DIR}"
+
+          cat > scripts/setlocalversion <<'EOF'
+#!/bin/sh
+echo "-android12-9+"
+EOF
+          chmod +x scripts/setlocalversion
+
+          sed -i 's/^CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/' "${CONFIG_DST}" || true
+          if grep -q '^CONFIG_LOCALVERSION=' "${CONFIG_DST}"; then
+            sed -i 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION="-android12-9+"/' "${CONFIG_DST}"
+          else
+            echo 'CONFIG_LOCALVERSION="-android12-9+"' >> "${CONFIG_DST}"
+          fi
+
+          sed -i \
+            -e '/CONFIG_TRIM_UNUSED_KSYMS/d' \
+            -e '/CONFIG_UNUSED_KSYMS_WHITELIST/d' \
+            -e '/CONFIG_KMI_SYMBOL_LIST/d' \
+            -e '/abi_symbollist/d' \
+            -e '\|/mnt/disks|d' \
+            "${CONFIG_DST}"
+
+          cat >> "${CONFIG_DST}" <<'EOF'
+# CONFIG_TRIM_UNUSED_KSYMS is not set
+CONFIG_UNUSED_KSYMS_WHITELIST=""
+# CONFIG_KMI_SYMBOL_LIST is not set
+CONFIG_KMI_SYMBOL_LIST=""
+EOF
+
+          make O="${OUT_DIR}" ARCH=arm64 LLVM=1 olddefconfig
+          ./scripts/config --file "${CONFIG_DST}" \
+            -d TRIM_UNUSED_KSYMS \
+            --set-str UNUSED_KSYMS_WHITELIST "" || true
+
+          sed -i \
+            -e '/CONFIG_TRIM_UNUSED_KSYMS=y/d' \
+            -e '/CONFIG_UNUSED_KSYMS_WHITELIST=/d' \
+            -e '/CONFIG_KMI_SYMBOL_LIST=/d' \
+            -e '/abi_symbollist/d' \
+            -e '\|/mnt/disks|d' \
+            "${CONFIG_DST}"
+
+          grep -q '^# CONFIG_TRIM_UNUSED_KSYMS is not set' "${CONFIG_DST}" || \
+            echo '# CONFIG_TRIM_UNUSED_KSYMS is not set' >> "${CONFIG_DST}"
+          grep -q '^CONFIG_UNUSED_KSYMS_WHITELIST=' "${CONFIG_DST}" || \
+            echo 'CONFIG_UNUSED_KSYMS_WHITELIST=""' >> "${CONFIG_DST}"
+
+          make O="${OUT_DIR}" ARCH=arm64 LLVM=1 olddefconfig
+          make O="${OUT_DIR}" ARCH=arm64 LLVM=1 prepare modules_prepare -j"$(nproc)"
+          echo "=== Kernel release ==="
+          make O="${OUT_DIR}" ARCH=arm64 LLVM=1 kernelrelease
+
+      - name: Generate stock-derived Module.symvers
+        run: |
+          set -euxo pipefail
+          python3 - <<'PY'
+          import os
+          import re
+          import struct
+          import subprocess
+          from pathlib import Path
+
+          workspace = Path(os.environ["GITHUB_WORKSPACE"])
+          build_dir = Path(os.environ["BUILD_DIR"])
+          stock_dir = workspace / os.environ["STOCK_EXTRACT_DIR"] / "modules_vendor_lib_modules"
+          wlan_src = build_dir / "vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4-mt79xx"
+
+          out_path = build_dir / "stock-crc" / "Module.symvers"
+          kernel_out_path = build_dir / "kernel_spark" / "out" / "Module.symvers"
+
+          def read_versions_section(ko: Path) -> bytes:
+              try:
+                  text = subprocess.check_output(
+                      ["readelf", "-x", "__versions", str(ko)],
+                      text=True,
+                      stderr=subprocess.DEVNULL,
+                  )
+              except subprocess.CalledProcessError:
+                  return b""
+              data = bytearray()
+              for line in text.splitlines():
+                  m = re.match(r"\s*0x[0-9a-fA-F]+\s+((?:[0-9a-fA-F]{8}\s*){1,4})", line)
+                  if not m:
+                      continue
+                  for word in m.group(1).split():
+                      data.extend(bytes.fromhex(word))
+              return bytes(data)
+
+          def parse_modversions(ko: Path):
+              data = read_versions_section(ko)
+              result = {}
+              for off in range(0, len(data) - 64 + 1, 64):
+                  rec = data[off:off + 64]
+                  crc = struct.unpack("<I", rec[:4])[0]
+                  name = rec[4:].split(b"\x00")[0].decode("ascii", errors="ignore")
+                  if name:
+                      result[name] = crc
+              return result
+
+          def parse_own_kcrctab(ko: Path):
+              try:
+                  text = subprocess.check_output(
+                      ["readelf", "-sW", str(ko)],
+                      text=True,
+                      stderr=subprocess.DEVNULL,
+                  )
+              except subprocess.CalledProcessError:
+                  return {}
+              result = {}
+              for line in text.splitlines():
+                  parts = line.split()
+                  if len(parts) < 8:
+                      continue
+                  ndx, name = parts[-2], parts[-1]
+                  if ndx == "ABS" and name.startswith("__crc_"):
+                      try:
+                          crc = int(parts[1], 16) & 0xFFFFFFFF
+                      except ValueError:
+                          continue
+                      if crc != 0:
+                          result[name[len("__crc_"):]] = crc
+              return result
+
+          def find_self_exports():
+              exports = set()
+              rex = re.compile(r"\bEXPORT_SYMBOL(?:_GPL)?(?:_NS)?\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)" , re.S)
+              dead_guard = re.compile(
+                  r"#if\s+defined\(UT_TEST_MODE\)\s*&&\s*defined\(CFG_BUILD_X86_PLATFORM\)"
+                  r".*?#endif",
+                  re.S,
+              )
+              for p in wlan_src.rglob("*"):
+                  if p.suffix not in [".c", ".h"]:
+                      continue
+                  try:
+                      text = p.read_text(errors="ignore")
+                  except Exception:
+                      continue
+                  stripped = dead_guard.sub("", text)
+                  for m in rex.finditer(stripped):
+                      exports.add(m.group(1))
+              exports.add("Get_Camera_Temperature")
+              return exports
+
+          stock_wlan = stock_dir / "wlan_drv_gen4m.ko"
+          if not stock_wlan.exists():
+              raise SystemExit(f"Missing stock wlan module: {stock_wlan}")
+
+          versions = parse_modversions(stock_wlan)
+          for ko in sorted(stock_dir.glob("*.ko")):
+              for name, crc in parse_modversions(ko).items():
+                  versions.setdefault(name, crc)
+
+          recovered_from_own_exports = {}
+          for ko in sorted(stock_dir.glob("*.ko")):
+              for name, crc in parse_own_kcrctab(ko).items():
+                  if name not in versions:
+                      recovered_from_own_exports[name] = (ko.name, crc)
+                  versions.setdefault(name, crc)
+
+          if "module_layout" not in versions:
+              raise SystemExit("module_layout CRC not found")
+
+          self_exports = find_self_exports()
+          removed = {}
+          for name in sorted(self_exports):
+              if name in versions:
+                  removed[name] = versions.pop(name)
+
+          out_path.parent.mkdir(parents=True, exist_ok=True)
+          kernel_out_path.parent.mkdir(parents=True, exist_ok=True)
+
+          lines = []
+          for name in sorted(versions):
+              lines.append(f"0x{versions[name]:08x}\t{name}\tvmlinux\tEXPORT_SYMBOL\t\n")
+          out_path.write_text("".join(lines))
+          kernel_out_path.write_text("".join(lines))
+
+          print(f"Wrote {len(versions)} CRCs")
+          print(f"module_layout=0x{versions['module_layout']:08x}")
+          print(f"Recovered {len(recovered_from_own_exports)} CRCs from stock modules' own export tables")
+          print(f"Removed {len(removed)} self-export CRCs")
+
+          expected_recovered = ["gConEmiPhyBase", "gConEmiSize", "mtk_wcn_wmt_assert_timeout"]
+          still_missing = [s for s in expected_recovered if s not in versions]
+          if still_missing:
+              raise SystemExit(f"ERROR: expected symbols still missing: {still_missing}")
+          PY
+
+          test -s "${BUILD_DIR}/stock-crc/Module.symvers"
+          test -s "${BUILD_DIR}/kernel_spark/out/Module.symvers"
+
+          echo "=== Merge in cfg80211.ko / mac80211.ko CRCs ==="
+          python3 - <<'PY'
+          import os
+          import re
+          import struct
+          import subprocess
+          from pathlib import Path
+
+          build_dir = Path(os.environ["BUILD_DIR"])
+          workspace = Path(os.environ["GITHUB_WORKSPACE"])
+          stock_dir = workspace / os.environ["STOCK_EXTRACT_DIR"] / "modules_vendor_lib_modules"
+          symvers_path = build_dir / "kernel_spark" / "out" / "Module.symvers"
+
+          def read_versions_section(ko):
+              try:
+                  text = subprocess.check_output(
+                      ["readelf", "-x", "__versions", str(ko)],
+                      text=True, stderr=subprocess.DEVNULL)
+              except subprocess.CalledProcessError:
+                  return b""
+              data = bytearray()
+              for line in text.splitlines():
+                  m = re.match(r"\s*0x[0-9a-fA-F]+\s+((?:[0-9a-fA-F]{8}\s*){1,4})", line)
+                  if not m:
+                      continue
+                  for word in m.group(1).split():
+                      data.extend(bytes.fromhex(word))
+              return bytes(data)
+
+          def parse_modversions(ko):
+              data = read_versions_section(ko)
+              result = {}
+              for off in range(0, len(data) - 64 + 1, 64):
+                  rec = data[off:off + 64]
+                  crc = struct.unpack("<I", rec[:4])[0]
+                  name = rec[4:].split(b"\x00")[0].decode("ascii", errors="ignore")
+                  if name:
+                      result[name] = crc
+              return result
+
+          def parse_own_kcrctab(ko):
+              try:
+                  text = subprocess.check_output(["readelf", "-sW", str(ko)], text=True, stderr=subprocess.DEVNULL)
+              except subprocess.CalledProcessError:
+                  return {}
+              result = {}
+              for line in text.splitlines():
+                  parts = line.split()
+                  if len(parts) < 8:
+                      continue
+                  ndx, name = parts[-2], parts[-1]
+                  if ndx == "ABS" and name.startswith("__crc_"):
+                      try:
+                          crc = int(parts[1], 16) & 0xFFFFFFFF
+                      except ValueError:
+                          continue
+                      if crc != 0:
+                          result[name[len("__crc_"):]] = crc
+              return result
+
+          existing_lines = symvers_path.read_text().splitlines()
+          existing_names = set()
+          for line in existing_lines:
+              parts = line.split("\t")
+              if len(parts) >= 2:
+                  existing_names.add(parts[1])
+
+          added = {}
+          for ko_name in ["cfg80211.ko", "mac80211.ko"]:
+              ko = stock_dir / ko_name
+              if not ko.exists():
+                  raise SystemExit(f"ERROR: {ko} not found")
+              merged = {}
+              merged.update(parse_modversions(ko))
+              merged.update(parse_own_kcrctab(ko))
+              for name, crc in merged.items():
+                  if name not in existing_names:
+                      added[name] = (ko_name, crc)
+                      existing_names.add(name)
+
+          new_lines = list(existing_lines)
+          for name, (ko_name, crc) in sorted(added.items()):
+              new_lines.append(f"0x{crc:08x}\t{name}\tvmlinux\tEXPORT_SYMBOL\t")
+
+          text = "\n".join(new_lines) + "\n"
+          symvers_path.write_text(text)
+
+          print(f"Added {len(added)} CRCs from cfg80211.ko/mac80211.ko")
+          expected = [
+              "cfg80211_cac_event", "cfg80211_radar_event",
+              "cfg80211_cqm_rssi_notify", "cfg80211_cqm_txe_notify",
+              "ieee80211_freq_khz_to_channel",
+          ]
+          still_missing = [s for s in expected if s not in existing_names]
+          if still_missing:
+              raise SystemExit(f"ERROR: expected symbols still missing: {still_missing}")
+          print("OK: all expected cfg80211/mac80211 symbols now have CRC coverage.")
+          PY
+
+      - name: Build patched wlan_drv_gen4m.ko
+        run: |
+          set -euxo pipefail
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export LLVM=1
+          export LLVM_IAS=1
+          export PATH="${HOME}/toolchains/clang/bin:${PATH}"
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+
+          KERNEL_DIR="${BUILD_DIR}/kernel_spark"
+          OUT_DIR="${KERNEL_DIR}/out"
+          WLAN_M="${BUILD_DIR}/vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m"
+          cd "${BUILD_DIR}"
+
+          test -s "${OUT_DIR}/Module.symvers"
+          grep -q 'module_layout' "${OUT_DIR}/Module.symvers"
+
+          set +e
+          make -C "${KERNEL_DIR}" \
+            O="${OUT_DIR}" \
+            M="${WLAN_M}" \
+            MODULE_NAME=wlan_drv_gen4m \
+            CONFIG_MTK_COMBO_WIFI_HIF=axi \
+            MTK_COMBO_CHIP=CONNAC \
+            WLAN_CHIP_ID=6765 \
+            MTK_ANDROID_WMT=y \
+            MTK_ANDROID_EMI=y \
+            CONFIG_GKI_SUPPORT=y \
+            CONFIG_SUPPORT_SNIFFER_RADIOTAP=y \
+            KBUILD_MODPOST_WARN=1 \
+            ARCH=arm64 \
+            SUBARCH=arm64 \
+            LLVM=1 \
+            LLVM_IAS=1 \
+            CLANG_TRIPLE=aarch64-linux-gnu- \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+            modules -j"$(nproc)" 2>&1 | tee "${GITHUB_WORKSPACE}/build.log"
+          BUILD_STATUS=${PIPESTATUS[0]}
+          set -e
+
+          echo "=== Build status: ${BUILD_STATUS} ==="
+          if [ "${BUILD_STATUS}" -ne 0 ]; then
+            echo "ERROR: build failed"
+            tail -250 "${GITHUB_WORKSPACE}/build.log" || true
+            exit "${BUILD_STATUS}"
+          fi
+
+          KO="$(find "${BUILD_DIR}" -name 'wlan_drv_gen4m.ko' -type f | head -n 1)"
+          if [ -z "${KO}" ]; then
+            echo "ERROR: wlan_drv_gen4m.ko was not produced"
+            find "${BUILD_DIR}" -name '*.ko' -type f -print || true
+            exit 1
+          fi
+
+          cp "${KO}" "${GITHUB_WORKSPACE}/wlan_drv_gen4m.unstripped.ko"
+          cp "${KO}" "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko"
+          llvm-strip --strip-debug "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" || true
+
+          echo "=== Built module ==="
+          file "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko"
+          ls -lh "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" "${GITHUB_WORKSPACE}/wlan_drv_gen4m.unstripped.ko"
+
+      - name: Verify patched module before packaging
+        run: |
+          set -euxo pipefail
+          KO="${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko"
+          STOCK="${GITHUB_WORKSPACE}/${STOCK_EXTRACT_DIR}/modules_vendor_lib_modules/wlan_drv_gen4m.ko"
+
+          echo "=== Vermagic ==="
+          strings "${KO}" | grep '^vermagic='
+          strings "${KO}" | grep -q "vermagic=${TARGET_VERMAGIC}"
+
+          echo "=== __versions section ==="
+          readelf -S "${KO}" | grep -q '__versions'
+          readelf -S "${KO}" | grep '__versions'
+
+          echo "=== Radiotap / monitor evidence ==="
+          strings "${KO}" | grep -iE 'radiotap|wlanMon|CFG_SUPPORT_SNIFFER_RADIOTAP|NL80211_IFTYPE_MONITOR|ARPHRD_IEEE80211_RADIOTAP|priv_driver_sniffer|wlanoidSetIcsSniffer' | head -120
+
+          echo "=== HARD CHECK: NL80211_IFTYPE_MONITOR must be present ==="
+          if ! strings "${KO}" | grep -q 'NL80211_IFTYPE_MONITOR'; then
+            echo "ERROR: cfg80211 monitor mode was not compiled in."
+            echo "ERROR: include/config.h likely overrode CFG_SUPPORT_SNIFFER_RADIOTAP back to 0."
+            exit 1
+          fi
+
+          echo "=== Undefined symbols in final module ==="
+          readelf -sW "${KO}" | awk '$7=="UND"{print $8}' | sort -u | tee "${GITHUB_WORKSPACE}/undefined-symbols.txt"
+
+          echo "=== Check known-bad imports ==="
+          BAD='filp_open\|kernel_read\|kernel_write\|kalValidateDevHandler\|ioremap_nocache\|ioremap_cache\|gWifiRsvMemPhyBase\|gWifiRsvMemSize\|connectivity_flush_dcache_area\|connectivity_arch_setup_dma_ops\|dma_get_required_mask\|get_dma_ops\|dma_supported\|platform_device_del\|rstNotifyWholeChipRstStatus\|set_logtoomuch_enable\|get_logtoomuch_enable'
+          if grep -E "^(${BAD})$" "${GITHUB_WORKSPACE}/undefined-symbols.txt"; then
+            echo "ERROR: final module still contains known-bad unresolved imports"
+            exit 1
+          fi
+
+          echo "=== Build log unresolved MODVERSIONS warnings (HARD FAIL) ==="
+          if grep -inE 'no symbol version for\|unknown symbol\|undefined!' "${GITHUB_WORKSPACE}/build.log" \
+            | tee "${GITHUB_WORKSPACE}/modversion-warnings.txt"; then
+            if [ -s "${GITHUB_WORKSPACE}/modversion-warnings.txt" ]; then
+              echo "ERROR: build produced symbols with no/unknown CRC version."
+              exit 1
+            fi
+          fi
+
+          echo "=== Cross-check every UND symbol has a real CRC in __versions section ==="
+          python3 - <<'PY'
+          import os
+          import re
+          import subprocess
+          import struct
+          import sys
+          ko = os.path.join(os.environ["GITHUB_WORKSPACE"], "wlan_drv_gen4m.ko")
+          und = set()
+          for line in subprocess.check_output(["readelf", "-sW", ko], text=True).splitlines():
+              parts = line.split()
+              if len(parts) >= 8 and parts[6] == "UND":
+                  name = parts[7]
+                  if name and not name.startswith("_"):
+                      und.add(name)
+                  elif name:
+                      und.add(name)
+
+          def read_versions_section(path):
+              try:
+                  text = subprocess.check_output(
+                      ["readelf", "-x", "__versions", path],
+                      text=True, stderr=subprocess.DEVNULL)
+              except subprocess.CalledProcessError:
+                  return b""
+              data = bytearray()
+              for line in text.splitlines():
+                  m = re.match(r"\s*0x[0-9a-fA-F]+\s+((?:[0-9a-fA-F]{8}\s*){1,4})", line)
+                  if not m:
+                      continue
+                  for word in m.group(1).split():
+                      data.extend(bytes.fromhex(word))
+              return bytes(data)
+
+          data = read_versions_section(ko)
+          versioned = set()
+          for off in range(0, len(data) - 64 + 1, 64):
+              rec = data[off:off + 64]
+              crc = struct.unpack("<I", rec[:4])[0]
+              name = rec[4:].split(b"\x00")[0].decode("ascii", errors="ignore")
+              if name:
+                  versioned.add(name)
+
+          bad = []
+          for name in sorted(und):
+              if name not in versioned:
+                  bad.append(name)
+          if bad:
+              print("ERROR: these UND symbols have NO CRC in __versions:")
+              for name in bad:
+                  print(f"  {name}")
+              sys.exit(1)
+          print(f"OK: all {len(und)} UND symbols have CRC coverage.")
+          PY
+
+      - name: Package Magisk module
+        run: |
+          set -euxo pipefail
+          PKG="${GITHUB_WORKSPACE}/magisk-module"
+          mkdir -p "${PKG}/system/vendor/lib/modules"
+
+          cat > "${PKG}/module.prop" <<EOF
+id=redmi-wifi-monitor-spark
+name=Redmi Spark Built-in WiFi Monitor Mode
+version=v11.0.0
+versionCode=11000
+author=SurajGupta2009
+description=Radiotap monitor mode for Redmi Pad SE 8.7 4G (spark) via patched wlan_drv_gen4m.ko
+EOF
+
+          cat > "${PKG}/customize.sh" <<'EOF'
+#!/system/bin/sh
+ui_print "============================================"
+ui_print " Redmi Spark Built-in WiFi Monitor Mode"
+ui_print " v11.0.0"
+ui_print "============================================"
+ui_print ""
+ui_print "This overlays /vendor/lib/modules/wlan_drv_gen4m.ko"
+ui_print "with a radiotap monitor-enabled build."
+ui_print ""
+ui_print "Recovery if Wi-Fi fails:"
+ui_print "  su"
+ui_print "  rm -rf /data/adb/modules/redmi-wifi-monitor-spark"
+ui_print "  reboot"
+ui_print ""
+ui_print "After reboot:"
+ui_print "  su"
+ui_print "  iw list | grep -A30 'Supported interface modes'"
+ui_print ""
+EOF
+
+          touch "${PKG}/sepolicy.rule"
+          cp "${GITHUB_WORKSPACE}/wlan_drv_gen4m.ko" \
+            "${PKG}/system/vendor/lib/modules/wlan_drv_gen4m.ko"
+          chmod 0644 "${PKG}/system/vendor/lib/modules/wlan_drv_gen4m.ko"
+
+          cat > "${PKG}/README-INSTALL.txt" <<'EOF'
+Redmi Pad SE 8.7 4G spark Wi-Fi monitor-mode module v11.0.
+
+Recovery:
+  su
+  rm -rf /data/adb/modules/redmi-wifi-monitor-spark
+  reboot
+
+Verify:
+  su
+  lsmod | grep wlan
+  strings /vendor/lib/modules/wlan_drv_gen4m.ko | grep -iE 'vermagic|radiotap|wlanMon|NL80211_IFTYPE_MONITOR'
+  dmesg | grep -iE 'wlan_drv_gen4m|unknown symbol|no symbol version|disagrees|vermagic|radiotap|monitor' | tail -100
+  iw list | grep -A30 'Supported interface modes'
+
+Test monitor:
+  su
+  iw dev wlan0 interface add mon0 type monitor
+  ip link set mon0 up
+  iw dev
+EOF
+
+          cd "${PKG}"
+          zip -r "${GITHUB_WORKSPACE}/redmi-wifi-monitor-spark-v11.0.zip" .
+          ls -lh "${GITHUB_WORKSPACE}/redmi-wifi-monitor-spark-v11.0.zip"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: redmi-spark-radiotap-monitor-build-v11.0
+          path: |
+            wlan_drv_gen4m.ko
+            wlan_drv_gen4m.unstripped.ko
+            redmi-wifi-monitor-spark-v11.0.zip
+            build.log
+            undefined-symbols.txt
+          if-no-files-found: warn
+          retention-days: 14
