@@ -171,6 +171,29 @@ jobs:
           p.write_text(s)
           PY
 
+          echo "=== Enable Android wlan_assistant NVRAM & dedicated log path ==="
+          echo "=== (In MediaTek's open-source release tree, CFG_WLAN_ASSISTANT_NVRAM is 0"
+          echo "===  and CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH is undefined in config.h."
+          echo "===  When those are off, the driver never registers wlanNvramBufHandler"
+          echo "===  or consys_log_event_notification with wmt_cdev_wifi / fw_log_wifi."
+          echo "===  When Android's wlan_assistant opens /dev/wmtWifi on boot and calls"
+          echo "===  WIFI_write WR-BUF:NVRAM or fw_log ioctl, the character device hits NULL"
+          echo "===  handlers and deadlocks in a 200-second loop: 'Wi-Fi driver is not ready for 2s')"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("include/config.h")
+          if p.exists():
+              s = p.read_text()
+              s = re.sub(r"#undef\s+CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH",
+                         "#define CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH 1", s)
+              s = re.sub(r"#define\s+CFG_WLAN_ASSISTANT_NVRAM\s+0",
+                         "#define CFG_WLAN_ASSISTANT_NVRAM 1", s)
+              p.write_text(s)
+              print("Patched include/config.h for Android wlan_assistant NVRAM & log path")
+          PY
+
           echo "=== Fix empty reset module Kbuild issue defensively ==="
           sed -i \
             -e 's/\$(MODULE_NAME_RESET)-objs += \$(RESET_OBJS)/ifneq (\$(MODULE_NAME_RESET),)\n\$(MODULE_NAME_RESET)-objs += \$(RESET_OBJS)/' \
